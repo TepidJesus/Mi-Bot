@@ -1,3 +1,6 @@
+
+BAD_WORDS = 'fuck'
+
 class Message_processor():
 
     def listify_message(self, message_raw):
@@ -18,3 +21,8 @@ class Message_processor():
                 continue
         return self.message_list
         
+    def swear_check(self, list_message):
+        if any(item in list_message for item in BAD_WORDS):
+            return True
+        else:
+            return False

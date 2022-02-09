@@ -22,7 +22,7 @@ async def on_ready():
 
 @miBot.event()
 async def on_message(message):
-    if message.authro == miBot.user:
+    if message.author == miBot.user:
         return
     else:
         message_as_list = message_handler.listify_message(message_raw=message)
