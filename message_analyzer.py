@@ -22,7 +22,11 @@ class Message_processor():
         return self.message_list
         
     def swear_check(self, list_message):
-        if any(item in list_message for item in BAD_WORDS):
-            return True
-        else:
-            return False
+        num_swear_words = 0
+        for word in list_message:
+            if word in BAD_WORDS:
+                num_swear_words += 1
+            else:
+                continue
+        
+        return num_swear_words 

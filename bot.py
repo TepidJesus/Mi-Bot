@@ -3,9 +3,9 @@ from dotenv import load_dotenv
 import os
 
 from message_analyzer import Message_processor
-
+from score_keeper import ScoreKeeper
 message_handler = Message_processor()
-
+score_handler = ScoreKeeper()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -26,7 +26,10 @@ async def on_message(message):
         return
     else:
         message_as_list = message_handler.listify_message(message_raw=message)
-        if message_handler.swear_check(message_as_list):
+        num_swear_words = message_handler.swear_check(message_as_list)
+        if  num_swear_words != 0:
+            score_handler.alter_score(member_name=message.author, num=num_swear_words)
+
             
 
 
