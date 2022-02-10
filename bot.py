@@ -26,7 +26,8 @@ async def on_message(message):
         return
     else:
         message_as_list = message_handler.listify_message(message_raw=message)
-
+        if message_handler.swear_check(message_as_list):
+            
 
 
 miBot.run(TOKEN)
