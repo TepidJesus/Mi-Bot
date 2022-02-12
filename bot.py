@@ -16,6 +16,11 @@ miBot = commands.Bot(intents = discord.Intents.all())
 async def hello(ctx):
     await ctx.respond('Hello')
 
+@miBot.slash_command(name='showcounts')
+async def showscores(ctx):
+    message_embed = (discord.Embed(color=discord.Colour.brand_red(), type='rich', title='Test'))
+    await ctx.respond(embed=message_embed)
+
 @miBot.event
 async def on_ready():
         print(f'[INFO] Mi Bot Has Connected To Discord...')
