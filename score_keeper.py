@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 class ScoreKeeper:
     def __init__(self) -> None:
@@ -27,4 +28,27 @@ class ScoreKeeper:
                 else:
                     continue 
         with open('swear_counts.json', 'w') as file:
-            json.dump(self.member_swear_counts, file)     
+            json.dump(self.member_swear_counts, file)
+
+    def get_top_ten(self): # Top ten list or if > 10 members is total num mumbers
+        top_ten = list() 
+        with open('swear_counts.json', 'r') as self.raw_json_scores:
+            self.members_swear_counts = json.load(self.raw_json_scores)
+            sorted_counts = dict(sorted(self.member_swear_counts.items(), key=lambda item: item[1], reverse=True))
+            
+            lookup_range = int()
+            if len(sorted_counts) < 10:
+                lookup_range = len(sorted_counts)
+            else:
+                lookup_range = 10
+
+
+            sorted_values = list(sorted_counts.values()) # Need a more effecient solution
+            sorted_keys = list(sorted_counts.keys()) # Need a more effecient solution
+            for index in range(0, lookup_range):
+                temp_tup = (sorted_keys[index], sorted_values[index])
+                print(temp_tup)
+
+        return top_ten    
+
+

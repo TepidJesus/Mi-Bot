@@ -14,9 +14,10 @@ miBot = commands.Bot(intents = discord.Intents.all())
 
 @miBot.slash_command() # Just A Test Command
 async def hello(ctx):
+    score_handler.get_top_ten()
     await ctx.respond('Hello')
 
-@miBot.slash_command(name='showcounts')
+@miBot.slash_command(name='showcounts') # Replies with the top 10 highest scores in the server
 async def showscores(ctx):
     message_embed = (discord.Embed(color=discord.Colour.brand_red(), type='rich', title='Test'))
     await ctx.respond(embed=message_embed)
