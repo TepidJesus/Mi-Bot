@@ -42,12 +42,11 @@ class ScoreKeeper:
             else:
                 lookup_range = 10
 
-
             sorted_values = list(sorted_counts.values()) # Need a more effecient solution
             sorted_keys = list(sorted_counts.keys()) # Need a more effecient solution
             for index in range(0, lookup_range):
                 temp_tup = (sorted_keys[index], sorted_values[index])
-                print(temp_tup)
+                top_ten.append(temp_tup)
 
         return top_ten    
 

@@ -30,3 +30,4 @@ class Message_processor():
                 continue
         
         return num_swear_words 
+
