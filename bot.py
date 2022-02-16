@@ -21,7 +21,6 @@ async def hello(ctx):
 async def showscores(ctx):
     top_scores = list()
     top_scores = score_handler.get_top_three()
-    print(top_scores)
     message_embed = discord.Embed(title="Top Three Highest Swear Counts In The Server", color=0x00aaff)
     message_embed.set_author(name=miBot.user.name)
     message_embed.add_field(name=f"🟨 - {top_scores[0][0]}", value=f'{top_scores[0][1]} Points', inline=True)
