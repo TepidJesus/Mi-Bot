@@ -25,8 +25,8 @@ async def showscores(ctx):
     message_embed = discord.Embed(title="Top Three Highest Swear Counts In The Server", color=0x00aaff)
     message_embed.set_author(name=miBot.user.name)
     message_embed.add_field(name=f"🟨 - {top_scores[0][0]}", value=f'{top_scores[0][1]} Points', inline=True)
-    message_embed.add_field(name=f"⬜ - {top_scores[1][0]}", value=top_scores[1][1], inline=False)
-    message_embed.add_field(name=f"🟫 - {top_scores[2][0]}", value=top_scores[2][1], inline=False)
+    message_embed.add_field(name=f"⬜ - {top_scores[1][0]}", value=f'{top_scores[1][1]} Points', inline=False)
+    message_embed.add_field(name=f"🟫 - {top_scores[2][0]}", value=f'{top_scores[2][1]} Points', inline=False)
     message_embed.set_footer(text='To See Your Own Score Use  /myscore')
     await ctx.respond(embed=message_embed)
 
