@@ -17,14 +17,16 @@ async def hello(ctx):
     score_handler.get_top_ten()
     await ctx.respond('Hello')
 
-@miBot.slash_command(name='showcounts') # Replies with the top 10 highest scores in the server
+@miBot.slash_command(name='showcounts') # Replies with the top 3 highest scores in the server
 async def showscores(ctx):
-    top_scores = 
+    top_scores = list()
+    top_scores = score_handler.get_top_three()
+    print(top_scores)
     message_embed = discord.Embed(title="Top Three Highest Swear Counts In The Server", color=0x00aaff)
     message_embed.set_author(name=miBot.user.name)
-    message_embed.add_field(name="🟨 #1 - USER", value="SCORE", inline=True)
-    message_embed.add_field(name="⬜ #2 - USER", value="SCORE", inline=True)
-    message_embed.add_field(name="🟫 #3 - USER", value="SCORE", inline=True)
+    message_embed.add_field(name=f"🟨 - {top_scores[0][0]}", value=f'{top_scores[0][1]} Points', inline=True)
+    message_embed.add_field(name=f"⬜ - {top_scores[1][0]}", value=top_scores[1][1], inline=False)
+    message_embed.add_field(name=f"🟫 - {top_scores[2][0]}", value=top_scores[2][1], inline=False)
     message_embed.set_footer(text='To See Your Own Score Use  /myscore')
     await ctx.respond(embed=message_embed)
 

@@ -31,22 +31,22 @@ class ScoreKeeper:
             json.dump(self.member_swear_counts, file)
 
     def get_top_three(self): # Top three list or if > 3 members is total num mumbers
-        top_three = list() 
-        with open('swear_counts.json', 'r') as self.raw_json_scores:
-            self.members_swear_counts = json.load(self.raw_json_scores)
-            sorted_counts = dict(sorted(self.member_swear_counts.items(), key=lambda item: item[1], reverse=True))
-            
-            lookup_range = int()
-            if len(sorted_counts) < 3:
-                lookup_range = len(sorted_counts)
-            else:
-                lookup_range = 3
+        top_three = list()
+        with open('swear_counts.json', 'r') as raw_json_scores:
+            members_swear_counts = json.load(raw_json_scores)
+            sorted_counts = dict(sorted(members_swear_counts.items(), key=lambda item: item[1], reverse=True))
 
-            sorted_values = list(sorted_counts.values()) # Need a more effecient solution
-            sorted_keys = list(sorted_counts.keys()) # Need a more effecient solution
-            for index in range(0, lookup_range):
-                temp_tup = (sorted_keys[index], sorted_values[index])
-                top_three.append(temp_tup)
+        lookup_range = int()
+        if len(sorted_counts) < 3:
+            lookup_range = len(sorted_counts)
+        else:
+            lookup_range = 3
+
+        sorted_values = list(sorted_counts.values()) # Need a more effecient solution
+        sorted_keys = list(sorted_counts.keys()) # Need a more effecient solution
+        for index in range(0, lookup_range):
+            temp_tup = (sorted_keys[index], sorted_values[index])
+            top_three.append(temp_tup)
 
         return top_three    
 
