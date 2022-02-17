@@ -20,7 +20,7 @@ async def hello(ctx):
 async def showscores(ctx):
     top_scores = list()
     top_scores = score_handler.get_top_three()
-    message_embed = discord.Embed(title="Top Three Highest Swear Counts In The Server", color=0x00aaff)
+    message_embed = discord.Embed(title="Top Three Swear Counts In The Server", color=0x00aaff)
     message_embed.set_author(name=miBot.user.name)
     message_embed.add_field(name=f"🟨 - {top_scores[0][0]}", value=f'{top_scores[0][1]} Points', inline=True)
     message_embed.add_field(name=f"⬜ - {top_scores[1][0]}", value=f'{top_scores[1][1]} Points', inline=False)
@@ -30,7 +30,12 @@ async def showscores(ctx):
 
 @miBot.slash_command(name='myscore')
 async def myscore(ctx):
-    
+    member = ctx.author.name
+    member_score = score_handler.get_member_score(member_name=member)
+    message_embed = discord.Embed(color=0x00aaff)
+    message_embed.set_author(name=miBot.user.name)
+    message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
+    await ctx.respond(embed = message_embed)
 
 @miBot.event
 async def on_ready():
