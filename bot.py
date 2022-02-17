@@ -1,3 +1,4 @@
+from email.policy import default
 import discord
 from dotenv import load_dotenv
 import os
@@ -37,6 +38,11 @@ async def myscore(ctx):
     message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
     await ctx.respond(embed = message_embed)
 
+@miBot.slash_command(name= 'quote')
+async def myscore(ctx, user: discord.Option(str, "Thing Goes Here", required=False, default='Nothing Entered')):
+    print(f'Here Is What Got {user} ')
+
+
 @miBot.event
 async def on_ready():
         print(f'[INFO] Mi Bot Has Connected To Discord...')
@@ -53,7 +59,6 @@ async def on_message(message):
         if  num_swear_words != 0:
             score_handler.alter_score(member_name=message.author.name, num=num_swear_words)
 
-            
 
 
 miBot.run(TOKEN)
