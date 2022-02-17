@@ -50,4 +50,8 @@ class ScoreKeeper:
 
         return top_three    
 
-
+    def get_member_score(self, member_name):
+        with open('swear_counts.json', 'r') as raw_scores:
+            all_scores = json.load(raw_scores)
+        member_score = all_scores[member_name]
+        return member_score
