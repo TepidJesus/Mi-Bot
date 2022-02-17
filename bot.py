@@ -14,10 +14,9 @@ miBot = commands.Bot(intents = discord.Intents.all())
 
 @miBot.slash_command() # Just A Test Command
 async def hello(ctx):
-    score_handler.get_top_ten()
     await ctx.respond('Hello')
 
-@miBot.slash_command(name='showcounts') # Replies with the top 3 highest scores in the server
+@miBot.slash_command(name='highscores') # Replies with the top 3 highest scores in the server
 async def showscores(ctx):
     top_scores = list()
     top_scores = score_handler.get_top_three()
@@ -28,6 +27,10 @@ async def showscores(ctx):
     message_embed.add_field(name=f"🟫 - {top_scores[2][0]}", value=f'{top_scores[2][1]} Points', inline=False)
     message_embed.set_footer(text='To See Your Own Score Use  /myscore')
     await ctx.respond(embed=message_embed)
+
+@miBot.slash_command(name='myscore')
+async def myscore(ctx):
+    
 
 @miBot.event
 async def on_ready():
