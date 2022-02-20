@@ -39,7 +39,11 @@ async def myscore(ctx):
 
 @miBot.slash_command(name= 'quote')
 async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=False, default='Nothing Entered')):
-    print(f'Here Is What Got {user} ')
+    c_channel = miBot.get_channel(ctx.channel.id)
+    print(f'Channel Is: {c_channel}')
+    messages = c_channel.history(limit=2)
+    print(f'Here Is What Got: {user} ')
+    print(f'Here Is the C_Channel History: {messages}')
 
 
 @miBot.event
