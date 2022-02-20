@@ -34,12 +34,11 @@ async def myscore(ctx):
     member = ctx.author.name
     member_score = score_handler.get_member_score(member_name=member)
     message_embed = discord.Embed(color=0x00aaff)
-    message_embed.set_author(name=miBot.user.name)
     message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
     await ctx.respond(embed = message_embed)
 
 @miBot.slash_command(name= 'quote')
-async def myscore(ctx, user: discord.Option(str, "Thing Goes Here", required=False, default='Nothing Entered')):
+async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=False, default='Nothing Entered')):
     print(f'Here Is What Got {user} ')
 
 
