@@ -41,9 +41,12 @@ async def myscore(ctx):
 async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=False, default='Nothing Entered')):
     c_channel = miBot.get_channel(ctx.channel.id)
     print(f'Channel Is: {c_channel}')
-    messages = c_channel.history(limit=2)
+    messages = await c_channel.history(limit=25).flatten()
     print(f'Here Is What Got: {user} ')
-    print(f'Here Is the C_Channel History: {messages}')
+    for message in messages:
+        if message.content != '':
+            print(f'{message.content} - {message.author.name}')
+    await ctx.respond('Command Run Fully')
 
 
 @miBot.event
