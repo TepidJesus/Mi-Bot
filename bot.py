@@ -13,10 +13,6 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 miBot = commands.Bot(intents = discord.Intents.all())
 
-@miBot.slash_command() # Just A Test Command
-async def hello(ctx):
-    await ctx.respond('Hello')
-
 @miBot.slash_command(name='highscores') # Replies with the top 3 highest scores in the server
 async def showscores(ctx):
     top_scores = list()
