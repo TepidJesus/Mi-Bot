@@ -36,12 +36,13 @@ async def myscore(ctx):
 @miBot.slash_command(name= 'quote')
 async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=False, default='Nothing Entered')):
     c_channel = miBot.get_channel(ctx.channel.id)
-    print(f'Channel Is: {c_channel}')
     messages = await c_channel.history(limit=25).flatten()
-    print(f'Here Is What Got: {user} ')
+    cached_message = str()
     for message in messages:
-        if message.content != '':
-            print(f'{message.content} - {message.author.name}')
+        if message.content != '' and message.author.name == user:
+            cached_message = message.content
+            cached_message = '"' + cached_message + '"'
+            break
     await ctx.respond('Command Run Fully')
 
 
