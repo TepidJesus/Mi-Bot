@@ -9,6 +9,17 @@ class QuoteKeeper:
         except:
             print('[INFO] Existing Quote Data Detected - A New Quote File Will Not Be Generated')
 
+    def refresh_quotes(self, guild_members):
+        with open('quote_bank.json', 'r') as raw_quotes:
+            guild_quotes = json.load(raw_quotes)
+            for member in guild_members:
+                if member.name not in guild_quotes.keys():
+                    guild_quotes[str(member.name)] = []
+                else:
+                    continue
+        with open('quote_bank.json', 'w') as raw_quotes:
+            json.dump(guild_quotes, raw_quotes)       
+
     def add_quote(self, quote, member):
         with open('quote_bank.json', 'r') as raw_quotes:
             quote_dict = json.load(raw_quotes)

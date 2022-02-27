@@ -1,4 +1,3 @@
-from email.policy import default
 import discord
 from dotenv import load_dotenv
 import os
@@ -6,8 +5,10 @@ from discord.ext import commands
 
 from message_analyzer import Message_processor
 from score_keeper import ScoreKeeper
+from quote_keeper import QuoteKeeper
 message_handler = Message_processor()
 score_handler = ScoreKeeper()
+quote_handler = QuoteKeeper()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -43,14 +44,16 @@ async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish 
             cached_message = message.content
             cached_message = '"' + cached_message + '"'
             break
+    quote_handler.add_quote(quote=cached_message, member=ctx.author.name)
     await ctx.respond('Command Run Fully')
-
 
 @miBot.event
 async def on_ready():
         print(f'[INFO] Mi Bot Has Connected To Discord...')
         score_handler.refresh_scores(guild_members=miBot.get_all_members())
         print(f'[INFO] Swear Counts Loaded')
+        quote_handler.refresh_quotes(guild_members=miBot.get_all_members())
+        print(f'[INFO] Quotes Loaded')
 
 @miBot.event
 async def on_message(message):
