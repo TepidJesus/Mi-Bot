@@ -18,6 +18,7 @@
  - Fun features like ASCII art and trivia commands.
  - Server Adim Features
   - Things like vote to ban. Easy reviewing of individual members chat histroy. Also special admin commands panel.
+
 # Development Plan:
  - Adapt Base Framework from Xi Bot to new framework
  - Use message interpretation method from Xi Bot
@@ -27,3 +28,9 @@
  - Chat Logging + Replay
  - MC Server Control
  - Voice Channel Replay system
+
+# Devlopment Time Line
+  - Baisc Bot Requirements (OnReady, OnMemberJoin etc)
+  - Swear Counter T0
+  - Quote System T0
+  - Music Playing System
