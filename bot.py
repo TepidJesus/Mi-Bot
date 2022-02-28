@@ -34,18 +34,24 @@ async def myscore(ctx):
     message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
     await ctx.respond(embed = message_embed)
 
-@miBot.slash_command(name= 'quote')
-async def myscore(ctx, User: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default='Nothing Entered')):
+quotes = miBot.create_group(name="quotes", description="testing", guild_ids=[927423272033865841,])
+
+@quotes.command(name= 'add')
+async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default='Nothing Entered')):
     c_channel = miBot.get_channel(ctx.channel.id)
     messages = await c_channel.history(limit=25).flatten()
     cached_message = str()
     for message in messages:
-        if message.content != '' and message.author.name == User:
+        if message.content != '' and message.author.name == user:
             cached_message = message.content
             cached_message = '"' + cached_message + '"'
             break
     quote_handler.add_quote(quote=cached_message, member=ctx.author.name)
     await ctx.respond('Command Run Fully')
+
+@quotes.command(name='show')
+async def show_member_quotes(inter: discord.Interaction):
+    pass # Place Holding...
 
 @miBot.event
 async def on_ready():
@@ -66,5 +72,5 @@ async def on_message(message):
             score_handler.alter_score(member_name=message.author.name, num=num_swear_words)
 
 
-
+miBot.add_application_command(quotes)
 miBot.run(TOKEN)

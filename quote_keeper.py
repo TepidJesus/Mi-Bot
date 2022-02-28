@@ -27,3 +27,9 @@ class QuoteKeeper:
             member_current_quotes.append(quote)
         with open('quote_bank.json', 'w') as raw_quotes:
             json.dump(quote_dict, raw_quotes)
+
+    def retrieve_quotes(self, member):
+        with open('quote_bank.json') as raw_quotes:
+            quote_dict = json.load(raw_quotes)
+            member_quotes = quote_dict[member]
+            return member_quotes
