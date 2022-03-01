@@ -46,8 +46,13 @@ async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish 
             cached_message = message.content
             cached_message = '"' + cached_message + '"'
             break
-    quote_handler.add_quote(quote=cached_message, member=ctx.author.name)
-    await ctx.respond('Command Run Fully')
+    if cached_message == "":
+        message_embed = discord.Embed(title="That User Does Not Exist", color=0x00aaff)
+    else:
+        quote_handler.add_quote(quote=cached_message, member=user)
+        message_embed = discord.Embed(title="Quote Added", color=0x00aaff)
+        message_embed.add_field(name=cached_message, value=f'- {user}', inline=True)
+    await ctx.respond(embed=message_embed)
 
 @quotes.command(name='show')
 async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The User You Wish To See Saved Quotes For", required=True, default=None)):
