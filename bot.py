@@ -50,8 +50,17 @@ async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish 
     await ctx.respond('Command Run Fully')
 
 @quotes.command(name='show')
-async def show_member_quotes(inter: discord.Interaction):
-    pass # Place Holding...
+async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The User You Wish To See Saved Quotes For", required=True, default=None)):
+    if user == None:
+        user = ctx.author.name
+    member_quotes = quote_handler.retrieve_quotes(user)
+    if len(member_quotes) == 0:
+        message_embed = discord.Embed(title=f"{user} Has No Quoted Messages", color=0x00aaff)
+    else:
+        message_embed = discord.Embed(title=f"{user}'s Quoted Messages:", color=0x00aaff)    
+        for quote in member_quotes:
+            message_embed.add_field(name=quote, value=f"- {user}", inline=False)
+    await ctx.respond(embed=message_embed)
 
 @miBot.event
 async def on_ready():
