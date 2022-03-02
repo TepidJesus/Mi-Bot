@@ -1,3 +1,4 @@
+from turtle import width
 import discord
 from dotenv import load_dotenv
 import os
@@ -14,6 +15,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 miBot = commands.Bot(intents = discord.Intents.all())
 
+######## COMMANDS ########
+#### SWEAR COUNT SYSTEM #####
 swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker", guild_ids=[927423272033865841,])
 
 @swearcount.command(name='highscores') # Replies with the top 3 highest scores in the server
@@ -36,8 +39,7 @@ async def user_score(ctx):
     message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
     await ctx.respond(embed = message_embed)
 
-
-
+#### QUOTE SYSTEM ####
 quotes = miBot.create_group(name="quotes", description="Base Command For All Quote Related Requests", guild_ids=[927423272033865841,])
 
 @quotes.command(name= 'add')
@@ -71,6 +73,8 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
             message_embed.add_field(name=quote, value=f"- {user}", inline=False)
     await ctx.respond(embed=message_embed)
 
+######## LISTENERS ########
+#### BOT LISTENING EVENTS ####
 @miBot.event
 async def on_ready():
         print(f'[INFO] Mi Bot Has Connected To Discord...')
@@ -89,6 +93,12 @@ async def on_message(message):
         if  num_swear_words != 0:
             score_handler.alter_score(member_name=message.author.name, num=num_swear_words)
 
+@miBot.event
+async def on_member_join(member):
+    message_embed = discord.Embed(title=f"Everyone Welcome {member.name} To The Server", color=0x00aaff)
+    message_embed.add_field(name=f'Your Current Score Is:', value=f"Points", inline=True)
+    message_embed.set_thumbnail(url=member.avatar)
+    await member.guild.system_channel.send(embed=message_embed)
 
 miBot.add_application_command(quotes)
 miBot.run(TOKEN)
