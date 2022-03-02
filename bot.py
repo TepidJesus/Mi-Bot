@@ -14,7 +14,9 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 miBot = commands.Bot(intents = discord.Intents.all())
 
-@miBot.slash_command(name='highscores') # Replies with the top 3 highest scores in the server
+swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker", guild_ids=[927423272033865841,])
+
+@swearcount.command(name='highscores') # Replies with the top 3 highest scores in the server
 async def showscores(ctx):
     top_scores = list()
     top_scores = score_handler.get_top_three()
@@ -26,15 +28,17 @@ async def showscores(ctx):
     message_embed.set_footer(text='To See Your Own Score Use  /myscore')
     await ctx.respond(embed=message_embed)
 
-@miBot.slash_command(name='myscore')
-async def myscore(ctx):
+@swearcount.command(name='score')
+async def user_score(ctx):
     member = ctx.author.name
     member_score = score_handler.get_member_score(member_name=member)
     message_embed = discord.Embed(color=0x00aaff)
     message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
     await ctx.respond(embed = message_embed)
 
-quotes = miBot.create_group(name="quotes", description="testing", guild_ids=[927423272033865841,])
+
+
+quotes = miBot.create_group(name="quotes", description="Base Command For All Quote Related Requests", guild_ids=[927423272033865841,])
 
 @quotes.command(name= 'add')
 async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default='Nothing Entered')):
