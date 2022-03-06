@@ -28,16 +28,21 @@ async def showscores(ctx):
     message_embed.add_field(name=f"🟨 - {top_scores[0][0]}", value=f'{top_scores[0][1]} Points', inline=True)
     message_embed.add_field(name=f"⬜ - {top_scores[1][0]}", value=f'{top_scores[1][1]} Points', inline=False)
     message_embed.add_field(name=f"🟫 - {top_scores[2][0]}", value=f'{top_scores[2][1]} Points', inline=False)
-    message_embed.set_footer(text='To See Your Own Score Use  /myscore')
+    message_embed.set_footer(text='To See Your Own Score Use  /swearcount score')
     await ctx.respond(embed=message_embed)
 
 @swearcount.command(name='score')
-async def user_score(ctx):
-    member = ctx.author.name
-    member_score = score_handler.get_member_score(member_name=member)
-    message_embed = discord.Embed(color=0x00aaff)
-    message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
-    await ctx.respond(embed = message_embed)
+async def user_score(ctx, user: discord.Option(str, "The Name Of The User", required=False, default=None)):
+    if user == None:
+        user = ctx.author.name
+    member_score = score_handler.get_member_score(member_name=user)
+    if member_score == None:
+        message_embed = discord.Embed(title="That User Does Not Exist", color=0x00aaff)
+        await ctx.respond(embed = message_embed, ephemeral=True)
+    else:
+        message_embed = discord.Embed(color=0x00aaff)
+        message_embed.add_field(name=f'Your Current Score Is:', value=f"{member_score} Points", inline=True)
+        await ctx.respond(embed = message_embed)
 
 #### QUOTE SYSTEM ####
 quotes = miBot.create_group(name="quotes", description="Base Command For All Quote Related Requests", guild_ids=[927423272033865841,])
