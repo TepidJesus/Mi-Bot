@@ -1,4 +1,3 @@
-from turtle import width
 import discord
 from dotenv import load_dotenv
 import os
@@ -16,6 +15,18 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 miBot = commands.Bot(intents = discord.Intents.all())
 
 ######## COMMANDS ########
+
+@miBot.slash_command(name="info")
+async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User You Would Like Info About", required=True, default='Nothing Entered')):
+    user_dis = miBot.mem ### Need to find a way to grab the discord user (To allow for proper info pulling)
+    created_at = int(ctx.author.created_at.timestamp())
+    message_embed = discord.Embed(title=f"Information About: __{user}__", color=0x00aaff, description=f'ID: {ctx.author.id}')
+    message_embed.add_field(name=f'Current Roles:', value=ctx.author.roles[0].name, inline=True)
+    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d> (<t:{created_at}:R>)", inline=True)
+    message_embed.set_footer()
+    message_embed.set_thumbnail(url=ctx.author.avatar)
+    await ctx.respond(embed=message_embed)
+
 #### SWEAR COUNT SYSTEM #####
 swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker", guild_ids=[927423272033865841,])
 
