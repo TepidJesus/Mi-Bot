@@ -14,17 +14,27 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 miBot = commands.Bot(intents = discord.Intents.all())
 
+def get_user_object(user_name):
+    user_obj = miBot.get_guild(miBot.guilds[0].id).get_member_named(user_name)
+    return user_obj
+
 ######## COMMANDS ########
 
 @miBot.slash_command(name="info")
-async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User You Would Like Info About", required=True, default='Nothing Entered')):
-    user_dis = miBot.mem ### Need to find a way to grab the discord user (To allow for proper info pulling)
-    created_at = int(ctx.author.created_at.timestamp())
-    message_embed = discord.Embed(title=f"Information About: __{user}__", color=0x00aaff, description=f'ID: {ctx.author.id}')
-    message_embed.add_field(name=f'Current Roles:', value=ctx.author.roles[0].name, inline=True)
+async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User You Would Like Info About", required=True, default=None)):
+    user_dis = get_user_object(user_name=user)
+    if user_dis == None:
+        user_dis = ctx.author
+
+    user_roles = user_dis.roles[1:]
+    created_at = int(user_dis.created_at.timestamp())
+    
+    message_embed = discord.Embed(title=f"Information About: __{user_dis.display_name}__", color=0x00aaff)
+    message_embed.add_field(name=f'Current Roles:', value=", ".join(r.mention for r in user_roles), inline=True)
     message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d> (<t:{created_at}:R>)", inline=True)
-    message_embed.set_footer()
+    message_embed.set_footer(text=f'Requested By {ctx.author.name}')
     message_embed.set_thumbnail(url=ctx.author.avatar)
+
     await ctx.respond(embed=message_embed)
 
 #### SWEAR COUNT SYSTEM #####
@@ -63,6 +73,7 @@ async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish 
     c_channel = miBot.get_channel(ctx.channel.id)
     messages = await c_channel.history(limit=25).flatten()
     cached_message = str()
+
     for message in messages:
         if message.content != '' and message.author.name == user:
             cached_message = message.content
@@ -74,6 +85,7 @@ async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish 
         quote_handler.add_quote(quote=cached_message, member=user)
         message_embed = discord.Embed(title="Quote Added", color=0x00aaff)
         message_embed.add_field(name=cached_message, value=f'- {user}', inline=True)
+
     await ctx.respond(embed=message_embed)
 
 @quotes.command(name='show')
