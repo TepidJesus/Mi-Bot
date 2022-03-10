@@ -20,7 +20,7 @@ def get_user_object(user_name):
 
 ######## COMMANDS ########
 
-@miBot.slash_command(name="info")
+@miBot.slash_command(name="info", description="Request Info About A User")
 async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User You Would Like Info About", required=True, default=None)):
     user_dis = get_user_object(user_name=user)
     if user_dis == None:
@@ -28,12 +28,14 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
 
     user_roles = user_dis.roles[1:]
     created_at = int(user_dis.created_at.timestamp())
-    
+    joined_at = int(user_dis.joined_at.timestamp())
+
     message_embed = discord.Embed(title=f"Information About: __{user_dis.display_name}__", color=0x00aaff)
-    message_embed.add_field(name=f'Current Roles:', value=", ".join(r.mention for r in user_roles), inline=True)
-    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d> (<t:{created_at}:R>)", inline=True)
+    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d>", inline=True)
+    message_embed.add_field(name=f'Joined Server:', value=f"<t:{joined_at}:d>\n(<t:{joined_at}:R>)", inline=True)
+    message_embed.add_field(name=f'Current Roles:', value=", ".join(r.mention for r in user_roles), inline=False)
     message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-    message_embed.set_thumbnail(url=ctx.author.avatar)
+    message_embed.set_thumbnail(url=user_dis.avatar)
 
     await ctx.respond(embed=message_embed)
 
