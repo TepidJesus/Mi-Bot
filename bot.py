@@ -26,7 +26,7 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
     if user_dis == None:
         user_dis = ctx.author
 
-    user_roles = user_dis.roles[1:]
+    user_roles = user_dis.roles[1:] # Causing Bug when user only has @everyone role?
     created_at = int(user_dis.created_at.timestamp())
     joined_at = int(user_dis.joined_at.timestamp())
 
@@ -102,6 +102,13 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
         for quote in member_quotes:
             message_embed.add_field(name=quote, value=f"- {user}", inline=False)
     await ctx.respond(embed=message_embed)
+
+#### QUOTE SYSTEM ####
+music = miBot.create_group(name="music", description="Commands to control MiBot's Music Function", guild_ids=[927423272033865841,])
+@music.command(name='play', description='Play the specified track via youtube search or link')
+async def play_track(ctx):
+    pass
+
 
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
