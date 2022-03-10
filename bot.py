@@ -31,7 +31,7 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
     joined_at = int(user_dis.joined_at.timestamp())
 
     message_embed = discord.Embed(title=f"Information About: __{user_dis.display_name}__", color=0x00aaff)
-    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d>", inline=True)
+    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d>\n(<t:{created_at}:R>", inline=True)
     message_embed.add_field(name=f'Joined Server:', value=f"<t:{joined_at}:d>\n(<t:{joined_at}:R>)", inline=True)
     message_embed.add_field(name=f'Current Roles:', value=", ".join(r.mention for r in user_roles), inline=False)
     message_embed.set_footer(text=f'Requested By {ctx.author.name}')
