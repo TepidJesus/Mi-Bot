@@ -18,6 +18,13 @@ def get_user_object(user_name):
     user_obj = miBot.get_guild(miBot.guilds[0].id).get_member_named(user_name)
     return user_obj
 
+def get_roles(user_obj):
+    try:
+        user_roles = user_obj.roles[1:]
+    except discord.HTTPException:
+        user_roles = user_obj.roles[0]
+    return user_roles
+    
 ######## COMMANDS ########
 
 @miBot.slash_command(name="info", description="Request Info About A User")
@@ -26,7 +33,7 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
     if user_dis == None:
         user_dis = ctx.author
 
-    user_roles = user_dis.roles[1:] # Causing Bug when user only has @everyone role?
+    user_roles = get_roles(user_dis)
     created_at = int(user_dis.created_at.timestamp())
     joined_at = int(user_dis.joined_at.timestamp())
 
