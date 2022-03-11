@@ -1,5 +1,4 @@
 import json
-from collections import OrderedDict
 
 class ScoreKeeper:
     def __init__(self) -> None:
@@ -53,5 +52,8 @@ class ScoreKeeper:
     def get_member_score(self, member_name):
         with open('swear_counts.json', 'r') as raw_scores:
             all_scores = json.load(raw_scores)
-        member_score = all_scores[member_name]
+        try:
+            member_score = all_scores[member_name]
+        except:
+            return None
         return member_score
