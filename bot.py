@@ -105,10 +105,14 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
 
 #### QUOTE SYSTEM ####
 music = miBot.create_group(name="music", description="Commands to control MiBot's Music Function", guild_ids=[927423272033865841,])
+
 @music.command(name='play', description='Play the specified track via youtube search or link')
-async def play_track(ctx):
+async def play_track(ctx, track: discord.Option(str, "Must be a link or YouTube search quote", required=True, default='Nothing Entered') ):
     pass
 
+@music.command(name='pause', description='Pause The Current Track')
+async def play_track(ctx):
+    pass
 
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
