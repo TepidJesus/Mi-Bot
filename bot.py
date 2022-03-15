@@ -100,8 +100,8 @@ async def user_score(ctx, user: discord.Option(str, "The Name Of The User", requ
 #### QUOTE SYSTEM ####
 quotes = miBot.create_group(name="quotes", description="Base Command For All Quote Related Requests", guild_ids=[927423272033865841,])
 
-@quotes.command(name= 'add')
-async def myscore(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default='Nothing Entered')):
+@quotes.command(name= 'add', description = 'Adde the previoues message of the user to their quote database.')
+async def add_quote(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default='Nothing Entered')):
     c_channel = miBot.get_channel(ctx.channel.id)
     messages = await c_channel.history(limit=25).flatten()
     cached_message = str()
@@ -139,11 +139,11 @@ music = miBot.create_group(name="music", description="Commands to control MiBot'
 @music.command(name='play', description='Play the specified track via youtube search or link')
 async def play_track(ctx, track: discord.Option(str, "Must be a link or YouTube search quote", required=True, default=None) ):
     if ctx.author.voice == None:
-        ctx.respond('You Are Not In A Voice Channel')
-    voice_channel = ctx.author.voice
-    print(voice_channel)
+        await ctx.respond('You Are Not In A Voice Channel')
+        return None
+    voice_channel = ctx.author.voice.channel
     if ctx.voice_client == None:
-        await voice_channel.connect
+        await voice_channel.connect()
     else:
         await ctx.voice_client.move_to(voice_channel)
 
@@ -189,7 +189,4 @@ async def on_member_join(member):
     message_embed.set_thumbnail(url=member.avatar)
     await member.guild.system_channel.send(embed=message_embed)
 
-miBot.add_application_command(swearcount)
-miBot.add_application_command(music)
-miBot.add_application_command(quotes)
 miBot.run(TOKEN)
