@@ -1,7 +1,10 @@
+from dis import disco
 import discord
 from dotenv import load_dotenv
 import os
 from discord.ext import commands
+from yt_dlp import YoutubeDL
+
 
 from message_analyzer import Message_processor
 from score_keeper import ScoreKeeper
@@ -10,9 +13,24 @@ message_handler = Message_processor()
 score_handler = ScoreKeeper()
 quote_handler = QuoteKeeper()
 
+YDL_OPTIONS = {
+    'format': 'bestaudio/best',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '192',
+    }]
+    }
+
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-miBot = commands.Bot(intents = discord.Intents.all())
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
+intents.voice_states = True
+intents.guild_messages = True
+miBot = commands.Bot(intents = intents)
 
 def get_user_object(user_name):
     user_obj = miBot.get_guild(miBot.guilds[0].id).get_member_named(user_name)
@@ -29,9 +47,14 @@ def get_roles(user_obj):
 
 @miBot.slash_command(name="info", description="Request Info About A User")
 async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User You Would Like Info About", required=True, default=None)):
-    user_dis = get_user_object(user_name=user)
-    if user_dis == None:
+    
+    if user == None:
         user_dis = ctx.author
+    else: 
+        user_dis = get_user_object(user_name=user)
+    if user_dis == None:
+        await ctx.respond('That User Doesn\'t Exist...')
+        return None
 
     user_roles = get_roles(user_dis)
     created_at = int(user_dis.created_at.timestamp())
@@ -110,16 +133,32 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
             message_embed.add_field(name=quote, value=f"- {user}", inline=False)
     await ctx.respond(embed=message_embed)
 
-#### QUOTE SYSTEM ####
+#### MUSIC SYSTEM ####
 music = miBot.create_group(name="music", description="Commands to control MiBot's Music Function", guild_ids=[927423272033865841,])
 
 @music.command(name='play', description='Play the specified track via youtube search or link')
-async def play_track(ctx, track: discord.Option(str, "Must be a link or YouTube search quote", required=True, default='Nothing Entered') ):
-    pass
+async def play_track(ctx, track: discord.Option(str, "Must be a link or YouTube search quote", required=True, default=None) ):
+    if ctx.author.voice == None:
+        ctx.respond('You Are Not In A Voice Channel')
+    voice_channel = ctx.author.voice
+    print(voice_channel)
+    if ctx.voice_client == None:
+        await voice_channel.connect
+    else:
+        await ctx.voice_client.move_to(voice_channel)
+
+    # if track[0:24] == 'https://www.youtube.com/':
+    #     await ctx.respond('That Was A Youtube Link')
+    # else:
+    #     await ctx.respond('That Was Not A Youtube Link')
 
 @music.command(name='pause', description='Pause The Current Track')
-async def play_track(ctx):
+async def pause_track(ctx):
     pass
+
+@music.command(name='disconnect', description='Force The Bot To Disconnet')
+async def bot_disconnect(ctx):
+    await ctx.voice_client.disconnect()  
 
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
@@ -150,5 +189,7 @@ async def on_member_join(member):
     message_embed.set_thumbnail(url=member.avatar)
     await member.guild.system_channel.send(embed=message_embed)
 
+miBot.add_application_command(swearcount)
+miBot.add_application_command(music)
 miBot.add_application_command(quotes)
 miBot.run(TOKEN)
