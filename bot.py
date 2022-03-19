@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 import os
 from discord.ext import commands
 from yt_dlp import YoutubeDL
+import pycord.wavelink as wavelink
+import asyncio
 
-
+from music_tracker import YTDLSource
 from message_analyzer import Message_processor
 from score_keeper import ScoreKeeper
 from quote_keeper import QuoteKeeper
@@ -13,14 +15,6 @@ message_handler = Message_processor()
 score_handler = ScoreKeeper()
 quote_handler = QuoteKeeper()
 
-YDL_OPTIONS = {
-    'format': 'bestaudio/best',
-    'postprocessors': [{
-        'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'mp3',
-        'preferredquality': '192',
-    }]
-    }
 
 
 load_dotenv()
@@ -31,6 +25,7 @@ intents.members = True
 intents.voice_states = True
 intents.guild_messages = True
 miBot = commands.Bot(intents = intents)
+
 
 def get_user_object(user_name):
     user_obj = miBot.get_guild(miBot.guilds[0].id).get_member_named(user_name)
@@ -137,7 +132,7 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
 music = miBot.create_group(name="music", description="Commands to control MiBot's Music Function", guild_ids=[927423272033865841,])
 
 @music.command(name='play', description='Play the specified track via youtube search or link')
-async def play_track(ctx, track: discord.Option(str, "Must be a link or YouTube search quote", required=True, default=None) ):
+async def play_track(ctx: commands.Context, track: discord.Option(str, "The Name Of The Track You Wish To Play", required=True, default=None)):
     if ctx.author.voice == None:
         await ctx.respond('You Are Not In A Voice Channel')
         return None
@@ -146,11 +141,14 @@ async def play_track(ctx, track: discord.Option(str, "Must be a link or YouTube 
         await voice_channel.connect()
     else:
         await ctx.voice_client.move_to(voice_channel)
+     
+    if track[0:24] == 'https://www.youtube.com/':
+        player = await YTDLSource.from_url(track, loop=miBot.loop, stream=True)
+        ctx.voice_client.play(player, after=lambda e: print(f"Player error: {e}") if e else None)
+        await ctx.respond(f"Now playing: {player.title}")
+    else:
+        await ctx.respond('That Was Not A Youtube Link')
 
-    # if track[0:24] == 'https://www.youtube.com/':
-    #     await ctx.respond('That Was A Youtube Link')
-    # else:
-    #     await ctx.respond('That Was Not A Youtube Link')
 
 @music.command(name='pause', description='Pause The Current Track')
 async def pause_track(ctx):
