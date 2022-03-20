@@ -1,4 +1,3 @@
-from dis import disco
 import discord
 from dotenv import load_dotenv
 import os
@@ -145,7 +144,10 @@ async def play_track(ctx: commands.Context, track: discord.Option(str, "The Name
     if track[0:24] == 'https://www.youtube.com/':
         player = await YTDLSource.from_url(track, loop=miBot.loop, stream=True)
         ctx.voice_client.play(player, after=lambda e: print(f"Player error: {e}") if e else None)
-        await ctx.respond(f"Now playing: {player.title}")
+        message_embed = discord.Embed(title=f"Now Playing:", color=0x00aaff)
+        message_embed.add_field(name='Track: ', value=f"{player.title}", inline=False)
+        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
+        await ctx.respond(embed=message_embed)
     else:
         await ctx.respond('That Was Not A Youtube Link')
 
@@ -156,7 +158,11 @@ async def pause_track(ctx):
 
 @music.command(name='disconnect', description='Force The Bot To Disconnet')
 async def bot_disconnect(ctx):
-    await ctx.voice_client.disconnect()  
+    if ctx.voice_client.is_playing():
+        ctx.voice_client.stop()
+    await ctx.voice_client.disconnect()
+    message_embed = discord.Embed(title=f"MiBot Has Left The Channel", color=0x00aaff)
+    await ctx.respond(embed=message_embed)
 
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
