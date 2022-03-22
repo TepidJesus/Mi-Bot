@@ -145,13 +145,15 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
     if track[0:24] == 'https://www.youtube.com/':
         player = await YTDLSource.from_url(track, loop=miBot.loop, stream=True)
         ctx.voice_client.play(player, after=lambda e: print(f"Player error: {e}") if e else None)
-        message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x00aaff)
+        message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x49d706)
+        message_embed.set_thumbnail(url=player.data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
 
     else:
         player = await YTDLSource.from_search(track, loop=miBot.loop, stream=True)
         ctx.voice_client.play(player, after=lambda e: print(f"Player error: {e}") if e else None)
-        message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x00aaff)
+        message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x49d706)
+        message_embed.set_thumbnail(url=player.data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
     await ctx.respond(embed=message_embed)    
 
