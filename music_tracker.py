@@ -27,29 +27,42 @@ class YTDLSource(discord.PCMVolumeTransformer):
         super().__init__(source, volume)
 
         self.data = data
-
+        self.play_queue = []
         self.title = data.get("title")
         self.url = data.get("url")
 
     @classmethod
-    async def from_url(cls, url, *, loop=None, stream=True):
+    async def from_url(cls, url, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
 
         if "entries" in data:
-            # Takes the first item from a playlist
             data = data["entries"][0]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
 
     @classmethod
-    async def from_search(cls, search, *, loop=None, stream=True):
+    async def from_search(cls, search, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
+        asyncio.new_event_loop
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"ytsearch:{search}", download=not stream))
         if "entries" in data:
-            # Takes the first item from a playlist
             data = data["entries"][0]
 
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
+
+    def queue_track(self, track_obj):
+        self.play_queue.insert(0, track_obj)
+
+    def get_next_track(self):
+        track = self.play_queue.pop(-1)
+        if len(self.play_queue) == 0:
+            return None
+        return track
+
+    def get_queue(self):
+        return self.play_queue
+
+        
