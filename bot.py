@@ -31,9 +31,6 @@ def get_user_object(user_name):
     user_obj = miBot.get_guild(miBot.guilds[0].id).get_member_named(user_name)
     return user_obj
 
-def next():
-    play_queue.pop(-1)
-
 def get_roles(user_obj):
     try:
         user_roles = user_obj.roles[1:]
@@ -41,29 +38,12 @@ def get_roles(user_obj):
         user_roles = user_obj.roles[0]
     return user_roles
 
-async def play_song(ctx, player):
-    message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x49d706)
-    message_embed.set_thumbnail(url=player.data['thumbnail'])
-    message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-    await ctx.send(embed=message_embed)
-
-    miBot.voice_clients[0].play(player)
-    while miBot.voice_clients[0].is_playing():
-        pass
-    
-    if len(play_queue) != 0:
-        ctx.voice_client.stop()
-        play_queue.pop(-1)
-        play_song(play_queue(-1)[0], play_queue(-1)[1])
-
-    return True
-
 def go_next():
     play_queue.pop(-1)
     if len(play_queue) != 0:
-        play_thing(play_queue[-1][0], play_queue[-1][1])
+        play_obj(play_queue[-1][0], play_queue[-1][1])
 
-def play_thing(ctx, player):
+def play_obj(ctx, player):
     if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
         queue_track((ctx, player))
     else:
@@ -182,18 +162,18 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
         player = await YTDLSource.from_search(track, loop=miBot.loop, stream=True)
 
     if len(play_queue) > 0:
-        play_thing(ctx, player)
+        play_obj(ctx, player)
         message_embed = discord.Embed(title=f"Queued:", description=f"{player.data['title']}", color=0x00aaff)
         message_embed.set_thumbnail(url=player.data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
         await ctx.respond(embed=message_embed)
             
     else:
-        play_thing(ctx, player)
+        play_obj(ctx, player)
         message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x49d706)
         message_embed.set_thumbnail(url=player.data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-        await ctx.send(embed=message_embed)
+        await ctx.respond(embed=message_embed)
             
         
 @music.command(name='resume', description='Resume A Paused Track')
@@ -207,11 +187,11 @@ async def skip_track(ctx):
         ctx.voice_client.stop()
         play_queue.pop(-1)
         if len(play_queue) > 0:
-            play_thing(play_queue[-1][0], play_queue[-1][1])
+            play_obj(play_queue[-1][0], play_queue[-1][1])
             message_embed = discord.Embed(title=f"Now Playing:", description=f"{play_queue[-1][1].data['title']}", color=0x49d706)
             message_embed.set_thumbnail(url=play_queue[-1][1].data['thumbnail'])
             message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-            await ctx.send(embed=message_embed)
+            await ctx.respond(embed=message_embed)
         else:
             message_embed = discord.Embed(description="Queue Empty", color=0x49d706)
             ctx.respond(embed=message_embed)
@@ -219,8 +199,10 @@ async def skip_track(ctx):
 
 @music.command(name='pause', description='Pause The Current Track')
 async def pause_track(ctx):
-    if ctx.voice_client.is_playing():
+    try:
         ctx.voice_client.pause()
+    except:
+        await ctx.respond('No Track Currently Playing', ephemeral=True)
 
 @music.command(name='disconnect', description='Force The Bot To Disconnet')
 async def bot_disconnect(ctx):
