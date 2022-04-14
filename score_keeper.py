@@ -1,13 +1,12 @@
 import json
-from collections import OrderedDict
 
 class ScoreKeeper:
     def __init__(self) -> None:
         try:
             with open('swear_counts.json', 'x'):
-                print('[INFO] No Existing JSON Data Found\n[INFO]Generating New File')
+                print('[INFO] No Existing Swear Count Data Found - Generating New File')
         except:
-            print('[INFO] Existing JSON Data Detected\n[INFO] A New File Will Not Be Generated')
+            print('[INFO] Existing Swear Count Data Detected - A New File Will Not Be Generated')
 
 
     def alter_score(self, member_name, num):
@@ -53,5 +52,8 @@ class ScoreKeeper:
     def get_member_score(self, member_name):
         with open('swear_counts.json', 'r') as raw_scores:
             all_scores = json.load(raw_scores)
-        member_score = all_scores[member_name]
+        try:
+            member_score = all_scores[member_name]
+        except:
+            return None
         return member_score
