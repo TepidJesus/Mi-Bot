@@ -155,7 +155,8 @@ music = miBot.create_group(name="music", description="Commands to control MiBot'
 async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You Wish To Play", required=True, default='Rick Roll')):
     await ctx.defer()
     if ctx.author.voice == None:
-        await ctx.respond('You Are Not In A Voice Channel')
+        message_embed = discord.Embed(description="You are not in a voice channel.", color=0x49d706)
+        await ctx.respond(embed=message_embed, ephemeral=True)
         return None
     voice_channel = ctx.author.voice.channel
 
@@ -200,7 +201,8 @@ async def resume_track(ctx):
     if ctx.voice_client.is_paused():
         ctx.voice_client.resume()
     else:
-        await ctx.respond('The Bot Is Not Currently Paused', ephemeral=True)
+        message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
+        await ctx.respond(embed=message_embed, ephemeral=True)
 
 @music.command(name='skip', description='Skip the currently playing track')
 async def skip_track(ctx):
@@ -216,6 +218,17 @@ async def pause_track(ctx):
         ctx.voice_client.pause()
     except:
         await ctx.respond('No Track Currently Playing', ephemeral=True)
+
+@music.command(name='playing', description='Show The Current Playing Track')
+async def playing(ctx):
+    if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+        message_embed = discord.Embed(title=f"Current Track:", description=f"{play_queue[-1][1].data['title']}", color=0x49d706)
+        message_embed.set_thumbnail(url=play_queue[-1][1].data['thumbnail'])
+        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
+        await ctx.respond(embed=message_embed, ephemeral=True)
+    else:
+        message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
+        await ctx.respond(embed=message_embed, ephemeral=True)
 
 @music.command(name='disconnect', description='Force The Bot To Disconnet')
 async def bot_disconnect(ctx):
