@@ -154,16 +154,6 @@ music = miBot.create_group(name="music", description="Commands to control MiBot'
 @music.command(name='play', description='Play the specified track via youtube search or link')
 async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You Wish To Play", required=True, default='Rick Roll')):
     await ctx.defer()
-    if ctx.author.voice == None:
-        message_embed = discord.Embed(description="You are not in a voice channel.", color=0x49d706)
-        await ctx.respond(embed=message_embed, ephemeral=True)
-        return None
-    voice_channel = ctx.author.voice.channel
-
-    if ctx.voice_client == None:
-        await voice_channel.connect()
-    elif ctx.voice_client.channel != voice_channel:
-        await ctx.voice_client.move_to(voice_channel)
 
     if track[0:24] == 'https://www.youtube.com/':
         try:
@@ -233,16 +223,40 @@ async def playing(ctx):
 @music.command(name='disconnect', description='Force The Bot To Disconnet')
 async def bot_disconnect(ctx):
     if ctx.voice_client.is_playing():
+        play_queue = []
         ctx.voice_client.stop()
     await ctx.voice_client.disconnect()
     message_embed = discord.Embed(title=f"MiBot Has Left The Channel", color=0x00aaff)
     await ctx.respond(embed=message_embed)
+
+@music.command(name='random', description='Play a random song from YouTube')
+async def bot_random_song(ctx):
+    player = await YTDLSource.random_track(loop=miBot.loop, stream=True)
+    if len(play_queue) > 0 or ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+        queue_track((ctx, player))
+        message_embed = discord.Embed(title=f"Queued:", description=f"{player.data['title']}", color=0x00aaff)
+        message_embed.set_thumbnail(url=player.data['thumbnail'])
+        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
+        await ctx.respond(embed=message_embed)
+            
+    else:
+        queue_track((ctx, player))
+        ctx.voice_client.play(player, after=lambda e: go_next())
+        message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x49d706)
+        message_embed.set_thumbnail(url=player.data['thumbnail'])
+        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
+        await ctx.respond(embed=message_embed)
 
 @play_track.before_invoke
 async def ensure_voice(ctx):
     if ctx.voice_client is None:
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
+        else:
+            message_embed = discord.Embed(description="You are not in a voice channel.", color=0x49d706)
+            await ctx.respond(embed=message_embed, ephemeral=True)
+    elif ctx.voice_client.channel != ctx.author.channel:
+        await ctx.voice_client.move_to(ctx.author.channel)
 
 @skip_track.after_invoke
 async def check_queue(ctx):

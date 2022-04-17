@@ -1,6 +1,7 @@
 from yt_dlp import YoutubeDL
 import discord
 import asyncio
+import random
 
 ytdl_format_options = {
     "format": "bestaudio/best",
@@ -53,16 +54,14 @@ class YTDLSource(discord.PCMVolumeTransformer):
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
 
-    def queue_track(self, track_obj):
-        self.play_queue.insert(0, track_obj)
+    @classmethod
+    async def random_track(cls, *, loop=None, stream=False):
+        loop = loop or asyncio.get_event_loop()
+        asyncio.new_event_loop
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"music", download=not stream))
+        if "entries" in data:
+            data = data["entries"][random.randint(0, 20)]
 
-    def get_next_track(self):
-        track = self.play_queue.pop(-1)
-        if len(self.play_queue) == 0:
-            return None
-        return track
-
-    def get_queue(self):
-        return self.play_queue
-
+        filename = data["url"] if stream else ytdl.prepare_filename(data)
+        return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
         
