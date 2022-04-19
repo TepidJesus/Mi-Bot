@@ -2,3 +2,4 @@ bot-env/
 .env
 swear_counts.json
 quote_bank.json
+__pycache__

@@ -47,21 +47,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
     async def from_search(cls, search, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
         asyncio.new_event_loop
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"ytsearch:{search}", download=not stream))
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"ytsearch:{search}", download=not stream, ))
         if "entries" in data:
             data = data["entries"][0]
-
+            
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
-
-    @classmethod
-    async def random_track(cls, *, loop=None, stream=False):
-        loop = loop or asyncio.get_event_loop()
-        asyncio.new_event_loop
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"music", download=not stream))
-        if "entries" in data:
-            data = data["entries"][random.randint(0, 20)]
-
-        filename = data["url"] if stream else ytdl.prepare_filename(data)
-        return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
-        
