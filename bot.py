@@ -152,18 +152,11 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
 
     if len(music_handler.play_queue) > 0 or ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
         music_handler.queue_track((ctx, player))
-        message_embed = discord.Embed(title=f"Queued:", description=f"{player.data['title']}", color=0x00aaff)
-        message_embed.set_thumbnail(url=player.data['thumbnail'])
-        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-        await ctx.respond(embed=message_embed)
+        await ctx.respond(embed=music_handler.get_queued_track_embed(player.data['title'], player.data['thumbnail'],ctx.author.name))
             
     else:
         music_handler.queue_track((ctx, player))
-        ctx.voice_client.play(player, after=lambda e: music_handler.go_next())
-        message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x49d706)
-        message_embed.set_thumbnail(url=player.data['thumbnail'])
-        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-        await ctx.respond(embed=message_embed)
+        await ctx.respond(embed=music_handler.get_now_playing_embed(player.data['title'], player.data['thumbnail'], ctx.author.name))
             
         
 @music.command(name='resume', description='Resume A Paused Track')
