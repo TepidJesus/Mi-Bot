@@ -185,10 +185,7 @@ async def pause_track(ctx):
 @music.command(name='playing', description='Show The Current Playing Track')
 async def playing(ctx):
     if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-        message_embed = discord.Embed(title=f"Current Track:", description=f"{music_handler.play_queue[-1][1].data['title']}", color=0x49d706)
-        message_embed.set_thumbnail(url=music_handler.play_queue[-1][1].data['thumbnail'])
-        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-        await ctx.respond(embed=message_embed, ephemeral=True)
+        await ctx.respond(embed=music_handler.get_now_playing_embed(music_handler.play_queue[-1][1].data['title'], music_handler.play_queue[-1][1].data['thumbnail'], ctx.author.name ), ephemeral=True)
     else:
         message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
@@ -220,10 +217,7 @@ async def check_queue(ctx):
         await ctx.respond(embed=message_embed, ephemeral=True)
         await bot_disconnect(ctx)
     else:
-        message_embed = discord.Embed(title=f"Now Playing:", description=f"{music_handler.play_queue[-2][1].data['title']}", color=0x49d706)
-        message_embed.set_thumbnail(url=music_handler.play_queue[-2][1].data['thumbnail'])
-        message_embed.set_footer(text=f'Requested By {ctx.author.name}')
-        await ctx.respond(embed=message_embed)
+        await ctx.respond(embed=music_handler.get_now_playing_embed(music_handler.play_queue[-2][1].data['title'], music_handler.play_queue[-2][1].data['thumbnail'], ctx.author.name))
 
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
