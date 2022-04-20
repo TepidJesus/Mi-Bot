@@ -233,6 +233,8 @@ async def on_ready():
 async def on_message(message):
     if message.author == miBot.user:
         return
+    elif message.author.bot:
+        await message.add_reaction('😒')
     else:
         message_as_list = message_handler.listify_message(message_raw=message)
         num_swear_words = message_handler.swear_check(message_as_list)
