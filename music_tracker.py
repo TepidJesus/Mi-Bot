@@ -78,12 +78,14 @@ class MusicHandler:
         self.play_queue.insert(0, track_obj)
 
     def get_now_playing_embed(self, track_name, track_thumbnail, author_name):
+        print(f'[INFO] Now Playing {track_name} as requested by {author_name}')
         message_embed = discord.Embed(title=f"Current Track:", description=f"{track_name}", color=0x49d706)
         message_embed.set_thumbnail(url=track_thumbnail)
         message_embed.set_footer(text=f'Requested By {author_name}')
         return message_embed
 
     def get_queued_track_embed(self, track_name, track_thumbnail, author_name):
+        print(f'[INFO] Queued {track_name} as requested by {author_name}')
         message_embed = discord.Embed(title=f"Queued:", description=f"{track_name}", color=0x00aaff)
         message_embed.set_thumbnail(url=track_thumbnail)
         message_embed.set_footer(text=f'Requested By {author_name}')
