@@ -218,7 +218,7 @@ async def ensure_voice(ctx):
             message_embed = discord.Embed(description="You are not in a voice channel.", color=0x49d706)
             await ctx.respond(embed=message_embed, ephemeral=True)
     elif ctx.voice_client.channel != ctx.author.voice.channel:
-        await ctx.voice_client.move_to(ctx.author.channel)
+        await ctx.voice_client.move_to(ctx.author.voice.channel)
 
 @skip_track.after_invoke
 async def check_queue(ctx):
