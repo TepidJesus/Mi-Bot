@@ -1,7 +1,6 @@
 from yt_dlp import YoutubeDL
 import discord
 import asyncio
-import random
 
 ytdl_format_options = {
     "format": "bestaudio/best",
@@ -28,7 +27,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
         super().__init__(source, volume)
 
         self.data = data
-        self.play_queue = []
         self.title = data.get("title")
         self.url = data.get("url")
 
@@ -47,9 +45,34 @@ class YTDLSource(discord.PCMVolumeTransformer):
     async def from_search(cls, search, *, loop=None, stream=False):
         loop = loop or asyncio.get_event_loop()
         asyncio.new_event_loop
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"ytsearch:{search}", download=not stream, ))
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"ytsearch:{search}", download=not stream))
         if "entries" in data:
             data = data["entries"][0]
             
         filename = data["url"] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **FFMPEG_OPTIONS), data=data)
+
+class MusicHandler:
+    def __init__(self) -> None:
+        self.play_queue = []
+
+    def go_next(self):
+        if len(self.play_queue) == 1:
+            self.play_queue.pop(-1)
+            return False
+        elif len(self.play_queue) > 0:
+            self.play_queue.pop(-1)
+            self.play_obj(self.play_queue[-1][0], self.play_queue[-1][1])
+            return True
+        return False
+
+    def play_obj(self, ctx, player):
+        try:
+            ctx.voice_client.play(player, after=lambda e: self.go_next())
+        except:
+            self.go_next()
+
+    def queue_track(self, track_obj):
+        if track_obj[1] == None or track_obj[0] == None:
+            return False
+        self.play_queue.insert(0, track_obj)

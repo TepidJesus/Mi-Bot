@@ -2,16 +2,17 @@ import discord
 from dotenv import load_dotenv
 import os
 from discord.ext import commands
-import asyncio
 
 from music_tracker import YTDLSource
+from music_tracker import MusicHandler
 from message_analyzer import Message_processor
 from score_keeper import ScoreKeeper
 from quote_keeper import QuoteKeeper
+
 message_handler = Message_processor()
 score_handler = ScoreKeeper()
 quote_handler = QuoteKeeper()
-
+music_handler = MusicHandler()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -22,14 +23,8 @@ intents.voice_states = True
 intents.guild_messages = True
 miBot = commands.Bot(intents = intents)
 
-play_queue = []
-
 ###### HELPER FUNCTIONS ######
 
-def queue_track(track_obj):
-    if track_obj[1] == None or track_obj[0] == None:
-        return False
-    play_queue.insert(0, track_obj)
 
 def get_user_object(user_name):
     user_obj = miBot.get_guild(miBot.guilds[0].id).get_member_named(user_name)
@@ -42,21 +37,6 @@ def get_roles(user_obj):
         user_roles = user_obj.roles[0]
     return user_roles
 
-def go_next():
-    if len(play_queue) == 1:
-        play_queue.pop(-1)
-        return False
-    elif len(play_queue) > 0:
-        play_queue.pop(-1)
-        play_obj(play_queue[-1][0], play_queue[-1][1])
-        return True
-    return False
-
-def play_obj(ctx, player):
-    try:
-        ctx.voice_client.play(player, after=lambda e: go_next())
-    except:
-        go_next()
 
 ######## COMMANDS ########
 
@@ -170,16 +150,16 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
             await ctx.respond(embed=message_embed, ephemeral=True)
             return None
 
-    if len(play_queue) > 0 or ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-        queue_track((ctx, player))
+    if len(music_handler.play_queue) > 0 or ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+        music_handler.queue_track((ctx, player))
         message_embed = discord.Embed(title=f"Queued:", description=f"{player.data['title']}", color=0x00aaff)
         message_embed.set_thumbnail(url=player.data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
         await ctx.respond(embed=message_embed)
             
     else:
-        queue_track((ctx, player))
-        ctx.voice_client.play(player, after=lambda e: go_next())
+        music_handler.queue_track((ctx, player))
+        ctx.voice_client.play(player, after=lambda e: music_handler.go_next())
         message_embed = discord.Embed(title=f"Now Playing:", description=f"{player.data['title']}", color=0x49d706)
         message_embed.set_thumbnail(url=player.data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
@@ -212,8 +192,8 @@ async def pause_track(ctx):
 @music.command(name='playing', description='Show The Current Playing Track')
 async def playing(ctx):
     if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-        message_embed = discord.Embed(title=f"Current Track:", description=f"{play_queue[-1][1].data['title']}", color=0x49d706)
-        message_embed.set_thumbnail(url=play_queue[-1][1].data['thumbnail'])
+        message_embed = discord.Embed(title=f"Current Track:", description=f"{music_handler.play_queue[-1][1].data['title']}", color=0x49d706)
+        message_embed.set_thumbnail(url=music_handler.play_queue[-1][1].data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
         await ctx.respond(embed=message_embed, ephemeral=True)
     else:
@@ -242,13 +222,13 @@ async def ensure_voice(ctx):
 
 @skip_track.after_invoke
 async def check_queue(ctx):
-    if len(play_queue) <= 1:
+    if len(music_handler.play_queue) <= 1:
         message_embed = discord.Embed(description="Queue Empty, Leaving The Channel", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
         await bot_disconnect(ctx)
     else:
-        message_embed = discord.Embed(title=f"Now Playing:", description=f"{play_queue[-2][1].data['title']}", color=0x49d706)
-        message_embed.set_thumbnail(url=play_queue[-2][1].data['thumbnail'])
+        message_embed = discord.Embed(title=f"Now Playing:", description=f"{music_handler.play_queue[-2][1].data['title']}", color=0x49d706)
+        message_embed.set_thumbnail(url=music_handler.play_queue[-2][1].data['thumbnail'])
         message_embed.set_footer(text=f'Requested By {ctx.author.name}')
         await ctx.respond(embed=message_embed)
 
