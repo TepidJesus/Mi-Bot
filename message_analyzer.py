@@ -10,7 +10,6 @@ class Message_processor():
         print('[INFO] Word Blacklist Loaded')
 
     def listify_message(self, message_raw):
-        print(f'[MESSAGE]: {message_raw.author} Says \"{message_raw.content}\"')
         self.message_list = list()
         self.message_list = message_raw.content.split(' ')
         for i in range(len(self.message_list)):
