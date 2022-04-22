@@ -4,10 +4,13 @@ class QuoteKeeper:
 
     def __init__(self):
         try:
-            with open('quote_bank.json', 'x'):
-                print('[INFO] No Existing Quote Data Found - Generating New Quote File')
+            with open('quote_bank.json', 'r'):
+                print('[INFO] Existing Quote Data Detected - A New Quote File Will Not Be Generated')
         except:
-            print('[INFO] Existing Quote Data Detected - A New Quote File Will Not Be Generated')
+            with open('quote_bank.json', 'x') as file:
+                print('[INFO] No Existing Quote Data Found - Generating New Quote File')
+                file.write('{}')
+
 
     def refresh_quotes(self, guild_members):
         with open('quote_bank.json', 'r') as raw_quotes:

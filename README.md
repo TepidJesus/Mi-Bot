@@ -17,7 +17,7 @@
  - Main VC logging. Shadowplay style 1min rolling clip. Command will save previous 30sec of audio. (!clip-that)
  - Swear Counter + Leaderboard
  - Fun features like ASCII art and trivia commands.
- - Server Adim Features
+ - Server Admin Features
   - Things like vote to ban. Easy reviewing of individual members chat histroy. Also special admin commands panel.
 
 # Development Plan:

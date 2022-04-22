@@ -25,7 +25,6 @@ miBot = commands.Bot(intents = intents)
 
 ###### HELPER FUNCTIONS ######
 
-
 def get_user_object(user_name):
     user_obj = miBot.get_guild(miBot.guilds[0].id).get_member_named(user_name)
     return user_obj

@@ -3,10 +3,12 @@ import json
 class ScoreKeeper:
     def __init__(self) -> None:
         try:
-            with open('swear_counts.json', 'x'):
-                print('[INFO] No Existing Swear Count Data Found - Generating New File')
+            with open('swear_counts.json', 'r'):
+                print('[INFO] Existing Count Data Detected - A New Quote File Will Not Be Generated')
         except:
-            print('[INFO] Existing Swear Count Data Detected - A New File Will Not Be Generated')
+            with open('swear_counts.json', 'x') as file:
+                print('[INFO] No Existing Count Data Found - Generating New Count File')
+                file.write('{}')
 
 
     def alter_score(self, member_name, num):
