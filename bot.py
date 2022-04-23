@@ -204,8 +204,7 @@ async def ensure_voice(ctx):
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
         else:
-            message_embed = discord.Embed(description="You are not in a voice channel.", color=0x49d706)
-            await ctx.respond(embed=message_embed, ephemeral=True)
+            await ctx.respond(embed=discord.Embed(description="You are not in a voice channel.", color=0x49d706), ephemeral=True)
     elif ctx.voice_client.channel != ctx.author.voice.channel:
         await ctx.voice_client.move_to(ctx.author.voice.channel)
 
@@ -217,6 +216,11 @@ async def check_queue(ctx):
         await bot_disconnect(ctx)
     else:
         await ctx.respond(embed=music_handler.get_now_playing_embed(music_handler.play_queue[-2][1].data['title'], music_handler.play_queue[-2][1].data['thumbnail'], ctx.author.name))
+
+async def get_queue_space(ctx):
+    if len(music_handler.play_queue) >= 10:
+        return True
+    return False
 
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
