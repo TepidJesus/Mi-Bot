@@ -148,13 +148,15 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
             message_embed = discord.Embed(description="Sorry, Something Went Wrong. Please Try Again Later.", color=0x49d706)
             await ctx.respond(embed=message_embed, ephemeral=True)
             return None
-
-    if len(music_handler.play_queue) > 0 or ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+    if len(music_handler.play_queue) >= 10:
+        message_embed = discord.Embed(description="The Queue is Already Full. Please Try Again Soon.", color=0x49d706)
+        await ctx.respond(embed=message_embed, ephemeral=True)
+    elif len(music_handler.play_queue) > 0 or ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
         music_handler.queue_track((ctx, player))
-        await ctx.respond(embed=music_handler.get_queued_track_embed(player.data['title'], player.data['thumbnail'],ctx.author.name))
-            
+        await ctx.respond(embed=music_handler.get_queued_track_embed(player.data['title'], player.data['thumbnail'],ctx.author.name))        
     else:
         music_handler.queue_track((ctx, player))
+        music_handler.play_obj(ctx, player)
         await ctx.respond(embed=music_handler.get_now_playing_embed(player.data['title'], player.data['thumbnail'], ctx.author.name))
             
         
