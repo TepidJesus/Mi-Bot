@@ -94,7 +94,7 @@ async def user_score(ctx, user: discord.Option(str, "The Name Of The User", requ
 #### QUOTE SYSTEM ####
 quotes = miBot.create_group(name="quotes", description="Base Command For All Quote Related Requests", guild_ids=[927423272033865841,])
 
-@quotes.command(name= 'add', description = 'Adde the previoues message of the user to their quote database.')
+@quotes.command(name= 'add', description = 'Add the previoues message of the user to their quote database.')
 async def add_quote(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default='Nothing Entered')):
     c_channel = miBot.get_channel(ctx.channel.id)
     messages = await c_channel.history(limit=25).flatten()
