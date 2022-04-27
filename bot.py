@@ -165,7 +165,7 @@ async def resume_track(ctx):
     if ctx.voice_client.is_paused():
         ctx.voice_client.resume()
     else:
-        message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
+        message_embed = discord.Embed(description="No Track Is Currently Paused", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
 
 @music.command(name='skip', description='Skip the currently playing track')
@@ -181,7 +181,8 @@ async def pause_track(ctx):
     try:
         ctx.voice_client.pause()
     except:
-        await ctx.respond('No Track Currently Playing', ephemeral=True)
+        message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
+        await ctx.respond(embed=message_embed, ephemeral=True)
 
 @music.command(name='playing', description='Show The Current Playing Track')
 async def playing(ctx):
