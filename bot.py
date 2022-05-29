@@ -253,7 +253,10 @@ async def on_member_join(member):
     message_embed = discord.Embed(title=f"Everyone Welcome __{member.name}__ To The Server", color=0x00aaff, description=f'ID: {member.id}')
     message_embed.add_field(name=f'Current Roles:', value=member.roles[0].name, inline=True)
     message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d> (<t:{created_at}:R>)", inline=True)
-    message_embed.set_thumbnail(url=member.avatar)
+
+    if member.avatar != None:
+        message_embed.set_thumbnail(url=member.avatar)
+    
     await member.guild.system_channel.send(embed=message_embed)
 
 miBot.run(TOKEN)
