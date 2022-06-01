@@ -36,6 +36,11 @@ def get_roles(user_obj):
         user_roles = user_obj.roles[0]
     return user_roles
 
+async def idle_check():
+    if len(music_handler.play_queue) == 0 and len(miBot.voice_clients) != 0:
+        miBot.voice_clients[0].stop()
+    else:
+        pass
 
 ######## COMMANDS ########
 
