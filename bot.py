@@ -220,11 +220,6 @@ async def check_queue(ctx):
     else:
         await ctx.respond(embed=music_handler.get_now_playing_embed(music_handler.play_queue[-2][1].data['title'], music_handler.play_queue[-2][1].data['thumbnail'], ctx.author.name))
 
-async def get_queue_space(ctx):
-    if len(music_handler.play_queue) >= 10:
-        return True
-    return False
-
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
 @miBot.event
