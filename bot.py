@@ -1,6 +1,7 @@
 import discord
 from dotenv import load_dotenv
 import os
+import asyncio
 from discord.ext import commands
 
 from music_tracker import YTDLSource
@@ -37,10 +38,10 @@ def get_roles(user_obj):
     return user_roles
 
 async def idle_check():
-    if len(music_handler.play_queue) == 0 and len(miBot.voice_clients) != 0:
-        miBot.voice_clients[0].stop()
-    else:
-        pass
+    while True:
+        await asyncio.sleep(180)
+        if len(music_handler.play_queue) == 0 and len(miBot.voice_clients) == 1:
+            await miBot.voice_clients[0].disconnect()
 
 ######## COMMANDS ########
 
@@ -259,4 +260,5 @@ async def on_member_join(member):
     
     await member.guild.system_channel.send(embed=message_embed)
 
+miBot.loop.create_task(idle_check())
 miBot.run(TOKEN)
