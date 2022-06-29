@@ -9,6 +9,9 @@ class Message_processor():
             self.word_blacklist.append(word)       
         print('[INFO] Word Blacklist Loaded')
 
+        self.message_log = dict()
+        print('[INFO] Message Log Initialised')
+
     def listify_message(self, message_raw):
         self.message_list = list()
         self.message_list = message_raw.content.split(' ')
@@ -36,3 +39,8 @@ class Message_processor():
         
         return num_swear_words 
 
+    def spam_check(self, raw_message):
+        if raw_message.author.id in self.message_log:
+            self.message_log[raw_message.author.id] += 1
+        else:
+            self.message_log[raw_message.author.id] = 1
