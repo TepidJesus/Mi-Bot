@@ -1,10 +1,9 @@
 # This is Mi Bot, written using the Pycord library.
-#See Development Branch for most up to date commits as main will only be merged when T0 deployment occurs#
 
 ### This repo will be replacing the original Mi Bot repo due to the library change. The switch from Hikari to Pycord comes as a result of Hikari's poor documentation and superfluous features.
 
 # Mi-Bot
-[WIP] My main Discord bot project for 2022. Mi bot will be a multi-functional bot, combining features from various other bots I have seen.
+[DEPLOYED] My main Discord bot project for 2022. Mi bot will be a multi-functional bot, combining features from various other bots I have seen.
 
 
 # Future Features List:
