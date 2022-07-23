@@ -37,11 +37,9 @@ class ScoreKeeper:
             members_swear_counts = json.load(raw_json_scores)
             sorted_counts = dict(sorted(members_swear_counts.items(), key=lambda item: item[1], reverse=True))
 
-        lookup_range = int()
+        lookup_range = 3
         if len(sorted_counts) < 3:
             lookup_range = len(sorted_counts)
-        else:
-            lookup_range = 3
 
         sorted_values = list(sorted_counts.values()) # Need a more effecient solution
         sorted_keys = list(sorted_counts.keys()) # Need a more effecient solution
