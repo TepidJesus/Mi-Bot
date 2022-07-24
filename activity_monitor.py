@@ -4,13 +4,13 @@ import discord
 class ActivityMonitor:
     def __init__(self, client):
         try:
-            with open('quote_bank.json', 'r'):
+            with open('activity_valut.json', 'r'):
                 print('[INFO] Existing Activity Data Detected - A New Activity File Will Not Be Generated')
         except:
-            with open('quote_bank.json', 'x') as file:
+            with open('activity_valut.json', 'x') as file:
                 print('[INFO] No Existing Activity Data Found - Generating New Activity File')
                 file.write('{}')
-                
+
         self.bot = client
         self.activity_cache = {} 
 
@@ -20,8 +20,10 @@ class ActivityMonitor:
         main_activity = current_activities[0]
     
         if len(current_activities) == 2:
-            main_activity = current_activities[0]
+            main_activity = current_activities[0] 
             using_spotify = True
+    
+
 
 
         
