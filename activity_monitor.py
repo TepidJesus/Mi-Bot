@@ -16,12 +16,17 @@ class ActivityMonitor:
 
     async def activity_check(self, user):
         current_activities = user.activities
-        using_spotify = False
+        spotify_activity = current_activities[1]  # For Future Implementation
         main_activity = current_activities[0]
-    
-        if len(current_activities) == 2:
-            main_activity = current_activities[0] 
-            using_spotify = True
+
+        if user not in self.activity_cache.keys():
+            self.activity_cache[user] = [{main_activity: 1}]
+        elif main_activity not in self.activity_cache[user][0]:
+            self.activity_cache[user][0][main_activity] = 1
+        else:
+            self.activity_cache[user][0][main_activity] += 1
+
+
     
 
 
