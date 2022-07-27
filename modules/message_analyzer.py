@@ -1,7 +1,7 @@
 class Message_processor():
 
     def __init__(self):
-        with open('word-blacklist.txt', 'r') as raw_blacklist:
+        with open('./data/word-blacklist.txt', 'r') as raw_blacklist:
             self.word_blacklist_raw = raw_blacklist.read().split(',')
         self.word_blacklist = list()
         for word in self.word_blacklist_raw:
