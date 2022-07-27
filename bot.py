@@ -4,11 +4,11 @@ import os
 import asyncio
 from discord.ext import commands
 
-from music_tracker import YTDLSource
-from music_tracker import MusicHandler
-from message_analyzer import Message_processor
-from score_keeper import ScoreKeeper
-from quote_keeper import QuoteKeeper
+from modules.music_tracker import YTDLSource
+from modules.music_tracker import MusicHandler
+from modules.message_analyzer import Message_processor
+from modules.score_keeper import ScoreKeeper
+from modules.quote_keeper import QuoteKeeper
 
 message_handler = Message_processor()
 score_handler = ScoreKeeper()
@@ -68,7 +68,7 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
     message_embed.set_thumbnail(url=user_dis.avatar)
 
     await ctx.respond(embed=message_embed)
-
+miBot.get
 #### SWEAR COUNT SYSTEM #####
 swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker", guild_ids=[927423272033865841,])
 
