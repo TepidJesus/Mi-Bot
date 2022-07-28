@@ -248,6 +248,7 @@ async def on_message(message):
         if  num_swear_words != 0:
             score_handler.alter_score(member_name=message.author.name, num=num_swear_words)
 
+
 @miBot.event
 async def on_member_join(member):
     created_at = int(member.created_at.timestamp())
