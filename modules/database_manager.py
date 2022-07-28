@@ -19,7 +19,7 @@ class DataManager:
 
     def update_entry(self, member, key, value):
         with SqliteDict('./data/memberData') as member_data:
-            if member.id not in member_data:
+            if member.id not in member_data.keys():
                 return False
             else:
                 member_data[key] = value
@@ -27,4 +27,11 @@ class DataManager:
 
             return True
 
-                
+    def remove_member(self, member):
+        with SqliteDict('./data/memberData') as member_data:
+            if member.id not in member_data.keys():
+                return False
+            else:
+                del member_data[member.id]
+                member_data.commit()
+            return True
