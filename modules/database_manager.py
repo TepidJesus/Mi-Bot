@@ -5,7 +5,7 @@ class DataManager:
         with SqliteDict('./data/memberData') as member_data:
             print(f'[INFO] Database initialized. Currently holding data of {len(member_data)} members.')
 
-    def add_new_member(self, new_member):
+    def add_new_member(self, new_member): # Adds a new member to the database (if they do not already exist.)
         with SqliteDict('./data/memberData') as member_data:
             if new_member in member_data.keys():
                 return False
@@ -14,4 +14,17 @@ class DataManager:
                     member_data[new_member.id] = {}
                 else:
                     member_data[new_member] = {}
+            member_data.commit()
             return True
+
+    def update_entry(self, member, key, value):
+        with SqliteDict('./data/memberData') as member_data:
+            if member.id not in member_data:
+                return False
+            else:
+                member_data[key] = value
+                member_data.commit()
+
+            return True
+
+                
