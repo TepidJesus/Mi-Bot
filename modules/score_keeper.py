@@ -1,4 +1,5 @@
 import json
+from sqlitedict import SqliteDict
 
 class ScoreKeeper:
     def __init__(self) -> None:

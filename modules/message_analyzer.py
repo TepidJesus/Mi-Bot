@@ -8,7 +8,7 @@ class Message_processor():
             word = word.strip(' ')
             self.word_blacklist.append(word)       
         print('[INFO] Word Blacklist Loaded')
-
+        
         self.message_log = dict()
         print('[INFO] Message Log Initialised')
 
