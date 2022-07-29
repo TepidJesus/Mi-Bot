@@ -1,5 +1,6 @@
 from sqlitedict import SqliteDict
 import discord
+
 class DataManager:
     def __init__(self):
         with SqliteDict('./data/memberData') as member_data:
@@ -19,12 +20,16 @@ class DataManager:
 
     def update_entry(self, member, key, value):
         with SqliteDict('./data/memberData') as member_data:
-            if member.id not in member_data.keys():
+            if not member.isinstance(discord.Member):
+                member_id = member
+            else:
+                member_id = member.id
+
+            if member_id not in member_data.keys():
                 return False
             else:
-                member_data[key] = value
+                member_data[member_id][key] = value
                 member_data.commit()
-
             return True
 
     def remove_member(self, member):
@@ -34,4 +39,5 @@ class DataManager:
             else:
                 del member_data[member.id]
                 member_data.commit()
+
             return True
