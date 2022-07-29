@@ -1,16 +1,11 @@
 import json
+from modules.database_manager import DataManager
 from sqlitedict import SqliteDict
 
 class ScoreKeeper:
-    def __init__(self) -> None:
-        try:
-            with open('swear_counts.json', 'r'):
-                print('[INFO] Existing Count Data Detected - A New Quote File Will Not Be Generated')
-        except:
-            with open('swear_counts.json', 'x') as file:
-                print('[INFO] No Existing Count Data Found - Generating New Count File')
-                file.write('{}')
-
+    def __init__(self, guild_members):
+        self.scoreKeeperDataManager = DataManager()
+        self.refresh_scores(guild_members)
 
     def alter_score(self, member_name, num):
         with open('swear_counts.json', 'r') as self.raw_json_scores:
@@ -22,15 +17,13 @@ class ScoreKeeper:
             json.dump(self.members_swear_count, file)
 
     def refresh_scores(self, guild_members):
-        with open('swear_counts.json', 'r') as raw_json_scores:
-            self.member_swear_counts = json.load(raw_json_scores)
+        with SqliteDict("./data/memberData.db") as member_data:
             for member in guild_members:
-                if member.name not in self.member_swear_counts.keys():
-                    self.member_swear_counts[member.name] = 0
+                if member.id not in member_data.keys():
+                    self.scoreKeeperDataManager.add_new_member(member)
+                    self.scoreKeeperDataManager.update_entry(member, "SwearScore", 0)
                 else:
-                    continue 
-        with open('swear_counts.json', 'w') as file:
-            json.dump(self.member_swear_counts, file)
+                    continue
 
     def get_top_three(self): # Top three list or if > 3 members is total num mumbers
         top_three = list()
