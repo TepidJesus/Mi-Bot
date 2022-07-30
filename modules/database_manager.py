@@ -31,6 +31,7 @@ class DataManager:
                 if increment:
                     current_val = member_data[member_id][key]
                     member_data[member_id][key] = value + current_val
+                    member_data.commit()
                 else:
                     member_data[member_id][key] = value
                     member_data.commit()

@@ -7,14 +7,9 @@ class ScoreKeeper:
         self.scoreKeeperDataManager = DataManager()
         self.refresh_scores(guild_members)
 
-    def alter_score(self, member_name, num):
-        with open('swear_counts.json', 'r') as self.raw_json_scores:
-            self.members_swear_count = json.load(self.raw_json_scores)
-            self.current_points = self.members_swear_count[member_name]
-            self.new_points = self.current_points + num
-            self.members_swear_count[member_name] = self.new_points
-        with open('swear_counts.json', 'w') as file:
-            json.dump(self.members_swear_count, file)
+    def alter_score(self, member, num):
+        self.scoreKeeperDataManager.update_entry(member, "SwearScore", num, True)
+        return True
 
     def refresh_scores(self, guild_members):
         with SqliteDict("./data/memberData.db") as member_data:
