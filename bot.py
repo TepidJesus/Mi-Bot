@@ -246,7 +246,7 @@ async def on_message(message):
         message_as_list = message_handler.listify_message(message_raw=message)
         num_swear_words = message_handler.swear_check(message_as_list)
         if  num_swear_words != 0:
-            score_handler.alter_score(member_name=message.author.name, num=num_swear_words)
+            score_handler.alter_score(member_name=message.author, num=num_swear_words)
 
 
 @miBot.event
