@@ -31,7 +31,7 @@ class ScoreKeeper:
         members_swear_counts.sort(key=itemgetter(1), reverse=True)
 
         if len(members_swear_counts) < 3:
-            lookup_range = len(sorted_counts)
+            lookup_range = len(members_swear_counts)
         else:
             lookup_range = 3
 
