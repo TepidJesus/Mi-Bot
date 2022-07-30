@@ -18,7 +18,7 @@ class DataManager:
             member_data.commit()
             return True
 
-    def update_entry(self, member, key, value):
+    def update_entry(self, member, key, value, increment=False):
         with SqliteDict('./data/memberData') as member_data:
             if not member.isinstance(discord.Member):
                 member_id = member
@@ -28,8 +28,12 @@ class DataManager:
             if member_id not in member_data.keys():
                 return False
             else:
-                member_data[member_id][key] = value
-                member_data.commit()
+                if increment:
+                    current_val = member_data[member_id][key]
+                    member_data[member_id][key] = value + current_val
+                else:
+                    member_data[member_id][key] = value
+                    member_data.commit()
             return True
 
     def remove_member(self, member):
@@ -39,5 +43,4 @@ class DataManager:
             else:
                 del member_data[member.id]
                 member_data.commit()
-
             return True
