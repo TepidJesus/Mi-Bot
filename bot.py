@@ -88,7 +88,7 @@ async def showscores(ctx):
 async def user_score(ctx, user: discord.Option(str, "The Name Of The User", required=False, default=None)):
     if user == None:
         user = ctx.author.name
-    member_score = score_handler.get_member_score(member_name=user)
+    member_score = score_handler.get_member_score(member_name=user.id)
     if member_score == None:
         message_embed = discord.Embed(title="That User Does Not Exist", color=0x00aaff)
         await ctx.respond(embed = message_embed, ephemeral=True)

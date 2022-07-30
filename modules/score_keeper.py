@@ -21,7 +21,7 @@ class ScoreKeeper:
                 else:
                     continue
 
-    def get_top_three(self): # Top three list or if > 3 members is total num mumbers
+    def get_top_three(self): # Top three list or if < 3 members is total num mumbers
         top_three = list()
         members_swear_counts = []
         with SqliteDict("./data/memberData.db") as member_data:
@@ -40,11 +40,7 @@ class ScoreKeeper:
 
         return top_three    
 
-    def get_member_score(self, member_name):
-        with open('swear_counts.json', 'r') as raw_scores:
-            all_scores = json.load(raw_scores)
-        try:
-            member_score = all_scores[member_name]
-        except:
-            return None
+    def get_member_score(self, member_id):
+        with SqliteDict("./data/memberData.db") as member_data:
+            member_score = member_data[member_id]["SwearScore"]
         return member_score
