@@ -1,15 +1,10 @@
 import json
-
+from modules.database_manager import DataManager
 class QuoteKeeper:
 
-    def __init__(self):
-        try:
-            with open('quote_bank.json', 'r'):
-                print('[INFO] Existing Quote Data Detected - A New Quote File Will Not Be Generated')
-        except:
-            with open('quote_bank.json', 'x') as file:
-                print('[INFO] No Existing Quote Data Found - Generating New Quote File')
-                file.write('{}')
+    def __init__(self, guild_members):
+        self.quoteKeeperDataManager = DataManager()
+        self.refresh_quotes(guild_members)
 
 
     def refresh_quotes(self, guild_members):
