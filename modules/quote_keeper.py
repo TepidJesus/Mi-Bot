@@ -1,5 +1,6 @@
 import json
 from modules.database_manager import DataManager
+from sqlitedict import SqliteDict
 class QuoteKeeper:
 
     def __init__(self, guild_members):
@@ -8,15 +9,13 @@ class QuoteKeeper:
 
 
     def refresh_quotes(self, guild_members):
-        with open('quote_bank.json', 'r') as raw_quotes:
-            guild_quotes = json.load(raw_quotes)
+        with SqliteDict("./data/memberData.db") as member_data:
             for member in guild_members:
-                if member.name not in guild_quotes.keys():
-                    guild_quotes[str(member.name)] = []
+                if member.id not in member_data.keys():
+                    self.scoreKeeperDataManager.add_new_member(member)
+                    self.scoreKeeperDataManager.update_entry(member, "SavedQuotes", [])
                 else:
-                    continue
-        with open('quote_bank.json', 'w') as raw_quotes:
-            json.dump(guild_quotes, raw_quotes)       
+                    continue  
 
     def add_quote(self, quote, member):
         with open('quote_bank.json', 'r') as raw_quotes:
