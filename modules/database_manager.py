@@ -8,17 +8,16 @@ class DataManager:
 
     def add_new_member(self, new_member): # Adds a new member to the database (if they do not already exist.)
         with SqliteDict('./data/memberData') as member_data:
+            if new_member.isinstance(discord.member):
+                new_member = new_member.id
             if new_member in member_data.keys():
                 return False
             else:
-                if new_member.isinstance(discord.Member):
-                    member_data[new_member.id] = {}
-                else:
-                    member_data[new_member] = {}
+                member_data[new_member] = {}
             member_data.commit()
             return True
 
-    def update_entry(self, member, key, value, increment=False):
+    def update_entry(self, member, key, value, increment=False): #TODO: Add increment checking. If value numeric increment val, if non-numeric add to list.
         with SqliteDict('./data/memberData') as member_data:
             if not member.isinstance(discord.Member):
                 member_id = member
