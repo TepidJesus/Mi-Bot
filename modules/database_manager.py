@@ -1,6 +1,8 @@
 from sqlitedict import SqliteDict
 import discord
 
+#TODO: Add uniformity to member.id. All inputs should accept the raw member object then get id.
+
 class DataManager:
     def __init__(self):
         with SqliteDict('./data/memberData') as member_data:
@@ -22,15 +24,18 @@ class DataManager:
             if not member.isinstance(discord.Member):
                 member_id = member
             else:
-                member_id = member.id
+                member_id = member.id    
 
             if member_id not in member_data.keys():
                 return False
             else:
                 if increment:
-                    current_val = member_data[member_id][key]
-                    member_data[member_id][key] = value + current_val
-                    member_data.commit()
+                    if isinstance(member_data[member_id][key], list):
+                        member_data[member_id][key].append(value)
+                    else:
+                        current_val = member_data[member_id][key]
+                        member_data[member_id][key] = value + current_val
+                        member_data.commit()
                 else:
                     member_data[member_id][key] = value
                     member_data.commit()
