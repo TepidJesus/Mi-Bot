@@ -3,9 +3,11 @@ import sqlite3
 from modules.database_manager import DataManager
 from sqlitedict import SqliteDict
 
-CLASS_KEY = "SavedQuotes"
+
 
 class QuoteKeeper:
+
+    CLASS_KEY = "SavedQuotes"
 
     def __init__(self, guild_members):
         self.quoteKeeperDataManager = DataManager()
@@ -17,14 +19,14 @@ class QuoteKeeper:
             for member in guild_members:
                 if member.id not in member_data.keys():
                     self.scoreKeeperDataManager.add_new_member(member)
-                    self.scoreKeeperDataManager.update_entry(member, CLASS_KEY, [])
+                    self.scoreKeeperDataManager.update_entry(member, self.CLASS_KEY, [])
                 else:
                     continue  
 
     def add_quote(self, quote, member):
-        self.quoteKeeperDataManager.update_entry(member, CLASS_KEY, quote, increment=True)
+        self.quoteKeeperDataManager.update_entry(member, self.CLASS_KEY, quote, increment=True)
         print(f"[INFO] Quote Added From {member.name}.")
 
     def retrieve_quotes(self, member):
         with SqliteDict('./data/memberData') as member_data:
-            return member_data[member.id][CLASS_KEY]
+            return member_data[member.id][self.CLASS_KEY]

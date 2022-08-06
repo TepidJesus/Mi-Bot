@@ -3,13 +3,17 @@ from modules.database_manager import DataManager
 from sqlitedict import SqliteDict
 from operator import itemgetter
 
+
 class ScoreKeeper:
+
+    CLASS_KEY = "SwearScore"
+
     def __init__(self, guild_members):
         self.scoreKeeperDataManager = DataManager()
         self.refresh_scores(guild_members)
 
     def alter_score(self, member, num):
-        self.scoreKeeperDataManager.update_entry(member, "SwearScore", num, True)
+        self.scoreKeeperDataManager.update_entry(member, self.CLASS_KEY, num, True)
         return True
 
     def refresh_scores(self, guild_members):
@@ -17,7 +21,7 @@ class ScoreKeeper:
             for member in guild_members:
                 if member.id not in member_data.keys():
                     self.scoreKeeperDataManager.add_new_member(member)
-                    self.scoreKeeperDataManager.update_entry(member, "SwearScore", 0)
+                    self.scoreKeeperDataManager.update_entry(member, , 0)
                 else:
                     continue
 
@@ -26,7 +30,7 @@ class ScoreKeeper:
         members_swear_counts = []
         with SqliteDict("./data/memberData.db") as member_data:
             for member_id in member_data.keys():
-                members_swear_counts.append((member_id, member_data[member_id]["SwearScore"]))
+                members_swear_counts.append((member_id, member_data[member_id][self.CLASS_KEY]))
         
         members_swear_counts.sort(key=itemgetter(1), reverse=True)
 
@@ -42,5 +46,5 @@ class ScoreKeeper:
 
     def get_member_score(self, member_id):
         with SqliteDict("./data/memberData.db") as member_data:
-            member_score = member_data[member_id]["SwearScore"]
+            member_score = member_data[member_id][self.CLASS_KEY]
         return member_score
