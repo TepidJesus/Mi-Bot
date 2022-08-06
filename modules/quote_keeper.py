@@ -1,9 +1,5 @@
-import json
-import sqlite3
 from modules.database_manager import DataManager
 from sqlitedict import SqliteDict
-
-
 
 class QuoteKeeper:
 

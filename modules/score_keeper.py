@@ -3,7 +3,6 @@ from modules.database_manager import DataManager
 from sqlitedict import SqliteDict
 from operator import itemgetter
 
-
 class ScoreKeeper:
 
     CLASS_KEY = "SwearScore"
