@@ -48,3 +48,12 @@ class DataManager:
                 del member_data[member.id]
                 member_data.commit()
             return True
+
+    def ensure_category(self, category, starter_key):
+        with SqliteDict('./data/memberData.db') as member_data:
+            for member_id in member_data:
+                try:
+                    data = member_data[member_id][category]
+                except:
+                    member_data[member_id][category] = starter_key
+        return None
