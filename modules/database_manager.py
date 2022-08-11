@@ -5,11 +5,11 @@ import discord
 
 class DataManager:
     def __init__(self):
-        with SqliteDict('./data/memberData') as member_data:
+        with SqliteDict('./data/memberData.db') as member_data:
             print(f'[INFO] Database initialized. Currently holding data of {len(member_data)} members.')
 
     def add_new_member(self, new_member): # Adds a new member to the database (if they do not already exist.)
-        with SqliteDict('./data/memberData') as member_data:
+        with SqliteDict('./data/memberData.db') as member_data:
             if isinstance(new_member, discord.Member):
                 new_member = new_member.id
             if new_member in member_data.keys():
@@ -20,7 +20,7 @@ class DataManager:
             return True
 
     def update_entry(self, member, key, value, increment=False):
-        with SqliteDict('./data/memberData') as member_data:
+        with SqliteDict('./data/memberData.db') as member_data:
             if not isinstance(member, discord.Member):
                 member_id = member
             else:
@@ -35,14 +35,13 @@ class DataManager:
                     else:
                         current_val = member_data[member_id][key]
                         member_data[member_id][key] = value + current_val
-                        member_data.commit()
                 else:
                     member_data[member_id][key] = value
-                    member_data.commit()
+            member_data.commit()
             return True
 
     def remove_member(self, member):
-        with SqliteDict('./data/memberData') as member_data:
+        with SqliteDict('./data/memberData.db') as member_data:
             if member.id not in member_data.keys():
                 return False
             else:

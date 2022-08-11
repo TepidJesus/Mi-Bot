@@ -10,10 +10,6 @@ from modules.message_analyzer import Message_processor
 from modules.score_keeper import ScoreKeeper
 from modules.quote_keeper import QuoteKeeper
 
-message_handler = Message_processor()
-score_handler = ScoreKeeper()
-quote_handler = QuoteKeeper()
-music_handler = MusicHandler()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -24,6 +20,8 @@ intents.voice_states = True
 intents.guild_messages = True
 miBot = commands.Bot(intents = intents)
 
+message_handler = Message_processor()
+music_handler = MusicHandler()
 ###### HELPER FUNCTIONS ######
 
 def get_user_object(user_name):
@@ -47,7 +45,7 @@ async def idle_check():
 
 @miBot.slash_command(name="info", description="Request Info About A User")
 async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User You Would Like Info About", required=True, default=None)):
-    
+    await ctx.defer()
     if user == None:
         user_dis = ctx.author
     else: 
@@ -68,9 +66,9 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
     message_embed.set_thumbnail(url=user_dis.avatar)
 
     await ctx.respond(embed=message_embed)
-miBot.get
+
 #### SWEAR COUNT SYSTEM #####
-swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker", guild_ids=[927423272033865841,])
+swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker")
 
 @swearcount.command(name='highscores') # Replies with the top 3 highest scores in the server
 async def showscores(ctx):
@@ -88,7 +86,7 @@ async def showscores(ctx):
 async def user_score(ctx, user: discord.Option(str, "The Name Of The User", required=False, default=None)):
     if user == None:
         user = ctx.author.name
-    member_score = score_handler.get_member_score(member_name=user.id)
+    member_score = score_handler.get_member_score(member_name=user)
     if member_score == None:
         message_embed = discord.Embed(title="That User Does Not Exist", color=0x00aaff)
         await ctx.respond(embed = message_embed, ephemeral=True)
@@ -98,32 +96,45 @@ async def user_score(ctx, user: discord.Option(str, "The Name Of The User", requ
         await ctx.respond(embed = message_embed)
 
 #### QUOTE SYSTEM ####
-quotes = miBot.create_group(name="quotes", description="Base Command For All Quote Related Requests", guild_ids=[927423272033865841,])
+quotes = miBot.create_group(name="quotes", description="Base Command For All Quote Related Requests")
 
 @quotes.command(name= 'add', description = 'Add the previoues message of the user to their quote database.')
-async def add_quote(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default='Nothing Entered')):
+async def add_quote(ctx, user: discord.Option(str, "The Name Of The User You Wish To Quote", required=True, default=None)):
+    print("Quote Add Command Ran")
+    await ctx.defer()
     c_channel = miBot.get_channel(ctx.channel.id)
     messages = await c_channel.history(limit=25).flatten()
     cached_message = str()
 
+    usr_obj = get_user_object(user)
+    if usr_obj == None:
+        message_embed = discord.Embed(title="That User Does Not Exist", color=0x00aaff)
+        await ctx.respond(embed = message_embed, ephemeral=True)
+        return None
+
     for message in messages:
-        if message.content != '' and message.author.name == user:
+        if message.content != '' and message.author == usr_obj:
             cached_message = message.content
             cached_message = '"' + cached_message + '"'
             break
+
     if cached_message == "":
-        message_embed = discord.Embed(title="That User Does Not Exist", color=0x00aaff)
+        message_embed = discord.Embed(title="I couldn't find any recent messages from that user.", color=0x00aaff)
+        await ctx.respond(embed = message_embed, ephemeral=True)
+        return None
     else:
-        quote_handler.add_quote(quote=cached_message, member=user)
+        quote_handler.add_quote(quote=cached_message, member=usr_obj)
         message_embed = discord.Embed(title="Quote Added", color=0x00aaff)
-        message_embed.add_field(name=cached_message, value=f'- {user}', inline=True)
+        message_embed.add_field(name=cached_message, value=f'- {usr_obj.display_name}', inline=True)
 
     await ctx.respond(embed=message_embed)
 
 @quotes.command(name='show')
 async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The User You Wish To See Saved Quotes For", required=True, default=None)):
     if user == None:
-        user = ctx.author.name
+        user = ctx.author
+    else:
+        user = get_user_object(user)
     member_quotes = quote_handler.retrieve_quotes(user)
     if len(member_quotes) == 0:
         message_embed = discord.Embed(title=f"{user} Has No Quoted Messages", color=0x00aaff)
@@ -134,7 +145,7 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
     await ctx.respond(embed=message_embed)
 
 #### MUSIC SYSTEM ####
-music = miBot.create_group(name="music", description="Commands to control MiBot's Music Function", guild_ids=[927423272033865841,])
+music = miBot.create_group(name="music", description="Commands to control MiBot's Music Function")
 
 @music.command(name='play', description='Play the specified track via youtube search or link')
 async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You Wish To Play", required=True, default='Rick Roll')):
@@ -229,10 +240,21 @@ async def check_queue(ctx):
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
 @miBot.event
+async def on_connect():
+    print(f'[INFO] Mi Bot Has Connected To Discord...')
+    global score_handler
+    global quote_handler
+    score_handler = ScoreKeeper(miBot.guilds[0].members)
+    quote_handler = QuoteKeeper(miBot.guilds[0].members)
+
+
+@miBot.event
 async def on_ready():
-        print(f'[INFO] Mi Bot Has Connected To Discord...')
+        print(f'[INFO] Mi Bot Is Ready')
+
         score_handler.refresh_scores(guild_members=miBot.get_all_members())
         print(f'[INFO] Swear Counts Loaded')
+
         quote_handler.refresh_quotes(guild_members=miBot.get_all_members())
         print(f'[INFO] Quotes Loaded')
 
@@ -248,9 +270,8 @@ async def on_message(message):
         if  num_swear_words != 0:
             score_handler.alter_score(member_name=message.author, num=num_swear_words)
 
-
 @miBot.event
-async def on_member_join(member):
+async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run whenver a member joins.
     created_at = int(member.created_at.timestamp())
     message_embed = discord.Embed(title=f"Everyone Welcome __{member.name}__ To The Server", color=0x00aaff, description=f'ID: {member.id}')
     message_embed.add_field(name=f'Current Roles:', value=member.roles[0].name, inline=True)

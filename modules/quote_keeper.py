@@ -14,8 +14,8 @@ class QuoteKeeper:
         with SqliteDict("./data/memberData.db") as member_data:
             for member in guild_members:
                 if member.id not in member_data.keys():
-                    self.scoreKeeperDataManager.add_new_member(member)
-                    self.scoreKeeperDataManager.update_entry(member, self.CLASS_KEY, [])
+                    self.quoteKeeperDataManager.add_new_member(member)
+                    self.quoteKeeperDataManager.update_entry(member, self.CLASS_KEY, [])
                 else:
                     continue  
 
@@ -24,5 +24,5 @@ class QuoteKeeper:
         print(f"[INFO] Quote Added From {member.name}.")
 
     def retrieve_quotes(self, member):
-        with SqliteDict('./data/memberData') as member_data:
+        with SqliteDict('./data/memberData.db') as member_data:
             return member_data[member.id][self.CLASS_KEY]
