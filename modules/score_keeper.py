@@ -10,6 +10,7 @@ class ScoreKeeper:
     def __init__(self, guild_members):
         self.scoreKeeperDataManager = DataManager()
         self.refresh_scores(guild_members)
+        self.scoreKeeperDataManager.ensure_category(self.CLASS_KEY, 0)
 
     def alter_score(self, member, num):
         self.scoreKeeperDataManager.update_entry(member, self.CLASS_KEY, num, True)
@@ -20,7 +21,7 @@ class ScoreKeeper:
             for member in guild_members:
                 if member.id not in member_data.keys():
                     self.scoreKeeperDataManager.add_new_member(member)
-                    self.scoreKeeperDataManager.update_entry(member, , 0)
+                    self.scoreKeeperDataManager.update_entry(member, self.CLASS_KEY, 0)
                 else:
                     continue
 
@@ -43,7 +44,7 @@ class ScoreKeeper:
 
         return top_three    
 
-    def get_member_score(self, member_id):
+    def get_member_score(self, member):
         with SqliteDict("./data/memberData.db") as member_data:
-            member_score = member_data[member_id][self.CLASS_KEY]
+            member_score = member_data[member.id][self.CLASS_KEY]
         return member_score

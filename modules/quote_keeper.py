@@ -8,6 +8,10 @@ class QuoteKeeper:
     def __init__(self, guild_members):
         self.quoteKeeperDataManager = DataManager()
         self.refresh_quotes(guild_members)
+        self.quoteKeeperDataManager.ensure_category(self.CLASS_KEY, [])
+        with SqliteDict('./data/memberData.db') as member_data:
+            print(member_data.items())
+
 
 
     def refresh_quotes(self, guild_members): 
@@ -25,4 +29,5 @@ class QuoteKeeper:
 
     def retrieve_quotes(self, member):
         with SqliteDict('./data/memberData.db') as member_data:
+            print(member_data[member.id])
             return member_data[member.id][self.CLASS_KEY]

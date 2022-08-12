@@ -37,7 +37,7 @@ class DataManager:
                         member_data[member_id][key] = value + current_val
                 else:
                     member_data[member_id][key] = value
-            member_data.commit()
+            member_data.commit(blocking=True)
             return True
 
     def remove_member(self, member):
@@ -56,4 +56,5 @@ class DataManager:
                     data = member_data[member_id][category]
                 except:
                     member_data[member_id][category] = starter_key
+            member_data.commit(blocking=True)
         return None
