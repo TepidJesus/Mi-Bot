@@ -12,12 +12,10 @@ class QuoteKeeper:
         with SqliteDict('./data/memberData.db') as member_data:
             print(member_data.items())
 
-
-
     def refresh_quotes(self, guild_members): 
         with SqliteDict("./data/memberData.db") as member_data:
             for member in guild_members:
-                if member.id not in member_data.keys():
+                if not self.quoteKeeperDataManager.in_database(member.id):
                     self.quoteKeeperDataManager.add_new_member(member)
                     self.quoteKeeperDataManager.update_entry(member, self.CLASS_KEY, [])
                 else:
@@ -30,4 +28,5 @@ class QuoteKeeper:
     def retrieve_quotes(self, member):
         with SqliteDict('./data/memberData.db') as member_data:
             print(member_data[member.id])
+            print(member_data.keys())
             return member_data[member.id][self.CLASS_KEY]

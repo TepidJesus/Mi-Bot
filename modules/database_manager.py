@@ -16,7 +16,7 @@ class DataManager:
                 return False
             else:
                 print(f"[INFO] A New Member Has Been Added To The Database (ID: {new_member})")
-                member_data[new_member] = {}
+                member_data[str(new_member)] = {}
             member_data.commit()
         return True
 
@@ -27,7 +27,8 @@ class DataManager:
             else:
                 member_id = member.id    
 
-            if member_id not in member_data.keys():
+            if not self.in_database(member):
+                print(f"[INFO] Update Rejected, {member.id} Not In Database")
                 return False
             else:
                 print[f"[INFO] An Entry In The Database Was Updated (Key: {key} Value: {value} Increment: {increment})"]
@@ -53,14 +54,16 @@ class DataManager:
             return True
 
     def ensure_category(self, category, starter_key):
-        with SqliteDict('./data/memberData.db', autocommit=True) as member_data:
-            for member_id in member_data:
+        with SqliteDict('./data/memberData.db') as member_data:
+            for member_id in self.get_current_members():
                 try:
-                    data = member_data[member_id][category]
+                    data = member_data[str(member_id)][category]
                 except:
                     print(f"[INFO] A New Category Has Been Added To The Database (ID: {member_id} Category: {category})")
-                    member_data[member_id][category] = starter_key
-            member_data.commit(blocking=True)
+                    member_data[str(member_id)][category] = starter_key
+                    member_data.commit()
+                    print(member_data[str(member_id)])
+                    
         return None
 
     def get_current_members(self):
@@ -72,6 +75,6 @@ class DataManager:
 
     def in_database(self, member_id):
         current_members = self.get_current_members()
-        if member_id in current_members:
+        if str(member_id) in current_members:
             return True
         return False
