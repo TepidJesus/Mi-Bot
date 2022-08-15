@@ -62,3 +62,16 @@ class DataManager:
                     member_data[member_id][category] = starter_key
             member_data.commit(blocking=True)
         return None
+
+    def get_current_members(self):
+        member_ids = []
+        with SqliteDict('./data/memberData.db') as member_data:
+            for member_id in member_data.iterkeys():
+                member_ids.append(member_id)
+        return member_ids
+
+    def in_database(self, member_id):
+        current_members = self.get_current_members()
+        if member_id in current_members:
+            return True
+        return False
