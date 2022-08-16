@@ -8,18 +8,6 @@ class DataManager:
         with SqliteDict('./data/memberData.db') as member_data:
             print(f'[INFO] Database initialized. Currently holding data of {len(member_data)} members.')
 
-    def add_new_member(self, new_member): # Adds a new member to the database (if they do not already exist.)
-        with SqliteDict('./data/memberData.db') as member_data:
-            if isinstance(new_member, discord.Member):
-                new_member = new_member.id
-            if new_member in member_data.keys():
-                return False
-            else:
-                print(f"[INFO] A New Member Has Been Added To The Database (ID: {new_member})")
-                member_data[str(new_member)] = {}
-            member_data.commit()
-        return True
-
     def update_entry(self, member, key, value, increment=False):
         with SqliteDict('./data/memberData.db') as member_data:
             if not isinstance(member, discord.Member):
@@ -40,12 +28,12 @@ class DataManager:
                         member_data[member_id][key] = value + current_val
                 else:
                     member_data[member_id][key] = value
-            member_data.commit(blocking=True)
+            member_data.commit()
         return True
 
     def remove_member(self, member):
         with SqliteDict('./data/memberData.db') as member_data:
-            if member.id not in member_data.keys():
+            if member.id not in member_data.keys(): # TODO: Migrate to new in_database() method
                 return False
             else:
                 del member_data[member.id]
@@ -61,9 +49,7 @@ class DataManager:
                 except:
                     print(f"[INFO] A New Category Has Been Added To The Database (ID: {member_id} Category: {category})")
                     member_data[str(member_id)][category] = starter_key
-                    member_data.commit()
-                    print(member_data[str(member_id)])
-                    
+            member_data.commit()  
         return None
 
     def get_current_members(self):
@@ -78,3 +64,15 @@ class DataManager:
         if str(member_id) in current_members:
             return True
         return False
+
+    def add_new_member(self, new_member): # Adds a new member to the database (if they do not already exist.)
+        with SqliteDict('./data/memberData.db') as member_data:
+            if isinstance(new_member, discord.Member):
+                new_member = new_member.id
+            if self.in_database(new_member):
+                return False
+            else:
+                print(f"[INFO] A New Member Has Been Added To The Database (ID: {new_member})")
+                member_data[str(new_member)] = {}
+            member_data.commit()
+        return True
