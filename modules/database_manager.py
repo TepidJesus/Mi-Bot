@@ -1,3 +1,4 @@
+from re import L
 from sqlitedict import SqliteDict
 import discord
 
@@ -49,7 +50,7 @@ class DataManager:
                 except:
                     print(f"[INFO] A New Category Has Been Added To The Database (ID: {member_id} Category: {category})")
                     member_data[str(member_id)][category] = starter_key
-            member_data.commit()  
+                    member_data.commit()  
         return None
 
     def get_current_members(self):
@@ -76,3 +77,10 @@ class DataManager:
                 member_data[str(new_member)] = {}
             member_data.commit()
         return True
+
+    def dump_database(self):
+        print("[INFO] Dumping Database...")
+        with SqliteDict('./data/memberData.db') as member_data:
+            for member_id in self.get_current_members():
+                print(f"{member_id}: {member_data[member_id]}")
+        print("[INFO] Dump Complete")
