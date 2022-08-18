@@ -20,8 +20,11 @@ class QuoteKeeper:
                     continue  
 
     def add_quote(self, quote, member):
-        self.quoteKeeperDataManager.update_entry(member, self.CLASS_KEY, quote, increment=True)
-        print(f"[INFO] Quote Added From {member.name}.")
+        success = self.quoteKeeperDataManager.update_entry(member, self.CLASS_KEY, quote, increment=True)
+        if success:
+            print(f"[INFO] Quote Added From {member.name}.")
+        else:
+            print(f"[ERROR] Failed Whilst Adding Quote For {member.name}")
 
     def retrieve_quotes(self, member):
         with SqliteDict('./data/memberData.db') as member_data:

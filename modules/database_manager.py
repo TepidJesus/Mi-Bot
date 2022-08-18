@@ -1,4 +1,3 @@
-from re import L
 from sqlitedict import SqliteDict
 import discord
 
@@ -16,20 +15,24 @@ class DataManager:
             else:
                 member_id = member.id    
 
-            if not self.in_database(member):
-                print(f"[INFO] Update Rejected, {member.id} Not In Database")
+            if not self.in_database(member_id):
+                print(f"[ERROR] Update Rejected, {member.id} Not In Database")
                 return False
             else:
-                print[f"[INFO] An Entry In The Database Was Updated (Key: {key} Value: {value} Increment: {increment})"]
+                print(f"[INFO] An Entry In The Database Was Updated (Key: {key} Value: {value})")
                 if increment:
                     if isinstance(member_data[member_id][key], list):
-                        member_data[member_id][key].append(value) # TODO: Add verbosity to this section.
+                        dtt = member_data[str(member_id)]
+                        lst = dtt[key]
+                        lst.append(value)
+                        dtt[key] = lst
+                        member_data[str(member_id)] = dtt # TODO: Add verbosity to this section.
                     else: 
                         current_val = member_data[member_id][key] # TODO: Make sure this actually works and is done right like ensure_cat
                         member_data[member_id][key] = value + current_val
                 else:
                     member_data[member_id][key] = value
-            member_data.commit()
+                member_data.commit()
         return True
 
     def remove_member(self, member):
