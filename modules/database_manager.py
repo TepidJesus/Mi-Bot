@@ -23,9 +23,9 @@ class DataManager:
                 print[f"[INFO] An Entry In The Database Was Updated (Key: {key} Value: {value} Increment: {increment})"]
                 if increment:
                     if isinstance(member_data[member_id][key], list):
-                        member_data[member_id][key].append(value)
-                    else:
-                        current_val = member_data[member_id][key]
+                        member_data[member_id][key].append(value) # TODO: Add verbosity to this section.
+                    else: 
+                        current_val = member_data[member_id][key] # TODO: Make sure this actually works and is done right like ensure_cat
                         member_data[member_id][key] = value + current_val
                 else:
                     member_data[member_id][key] = value
@@ -48,9 +48,11 @@ class DataManager:
                 try:
                     data = member_data[str(member_id)][category]
                 except:
-                    print(f"[INFO] A New Category Has Been Added To The Database (ID: {member_id} Category: {category})")
-                    member_data[str(member_id)][category] = starter_key
-                    member_data.commit()  
+                    print(f"[INFO] A New Category Has Been Added To The Database (ID: {member_id} Category: {category} Starter Key: {starter_key})")
+                    dtt = member_data[str(member_id)]
+                    dtt[category] = starter_key
+                    member_data[str(member_id)] = dtt
+                    member_data.commit()
         return None
 
     def get_current_members(self):
