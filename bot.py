@@ -9,7 +9,7 @@ from modules.music_tracker import MusicHandler
 from modules.message_analyzer import Message_processor
 from modules.score_keeper import ScoreKeeper
 from modules.quote_keeper import QuoteKeeper
-
+from modules.database_manager import DataManager
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -22,6 +22,7 @@ miBot = commands.Bot(intents = intents)
 
 message_handler = Message_processor()
 music_handler = MusicHandler()
+data_manager = DataManager()
 ###### HELPER FUNCTIONS ######
 
 def get_user_object(user_name):
@@ -70,20 +71,22 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
 #### SWEAR COUNT SYSTEM #####
 swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker")
 
-@swearcount.command(name='highscores') # Replies with the top 3 highest scores in the server
+@swearcount.command(name='highscores') #TODO: Add error catch for user that doesn't exist.
 async def showscores(ctx):
     await ctx.defer()
     top_scores = list()
     top_scores = score_handler.get_top_three()
-
+    
+    names = []
     for i in range(len(top_scores)):
-         top_scores[0][i] = await miBot.get_or_fetch_user(top_scores[0][i]).display_name
+        usr_obj = miBot.guilds[0].get_member(int(top_scores[i][0]))
+        names.append(usr_obj.display_name)
 
     message_embed = discord.Embed(title="Top Three Swear Counts In The Server", color=0x00aaff)
     message_embed.set_author(name=miBot.user.name)
-    message_embed.add_field(name=f"🟨 - {top_scores[0][0]}", value=f'{top_scores[0][1]} Points', inline=True)
-    message_embed.add_field(name=f"⬜ - {top_scores[1][0]}", value=f'{top_scores[1][1]} Points', inline=False)
-    message_embed.add_field(name=f"🟫 - {top_scores[2][0]}", value=f'{top_scores[2][1]} Points', inline=False)
+    message_embed.add_field(name=f"🟨 - {names[0]}", value=f'{top_scores[0][1]} Points', inline=True)
+    message_embed.add_field(name=f"⬜ - {names[1]}", value=f'{top_scores[1][1]} Points', inline=False)
+    message_embed.add_field(name=f"🟫 - {names[2]}", value=f'{top_scores[2][1]} Points', inline=False)
     message_embed.set_footer(text='To See Your Own Score Use  /swearcount score')
     await ctx.respond(embed=message_embed)
 
@@ -251,8 +254,8 @@ async def on_connect():
     print(f'[INFO] Mi Bot Has Connected To Discord...')
     global score_handler
     global quote_handler
-    score_handler = ScoreKeeper(miBot.guilds[0].members)
-    quote_handler = QuoteKeeper(miBot.guilds[0].members)
+    score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
+    quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
 
 
 @miBot.event

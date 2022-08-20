@@ -5,8 +5,8 @@ class QuoteKeeper:
 
     CLASS_KEY = "SavedQuotes"
 
-    def __init__(self, guild_members):
-        self.quoteKeeperDataManager = DataManager()
+    def __init__(self, guild_members, dataManager):
+        self.quoteKeeperDataManager = dataManager
         self.refresh_quotes(guild_members)
         self.quoteKeeperDataManager.ensure_category(self.CLASS_KEY, [])
 

@@ -7,8 +7,8 @@ class ScoreKeeper:
 
     CLASS_KEY = "SwearScore"
 
-    def __init__(self, guild_members):
-        self.scoreKeeperDataManager = DataManager()
+    def __init__(self, guild_members, dataManager):
+        self.scoreKeeperDataManager = dataManager
         self.refresh_scores(guild_members)
         self.scoreKeeperDataManager.ensure_category(self.CLASS_KEY, 0)
 
