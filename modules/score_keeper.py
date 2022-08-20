@@ -19,7 +19,7 @@ class ScoreKeeper:
     def refresh_scores(self, guild_members):
         with SqliteDict("./data/memberData.db") as member_data:
             for member in guild_members:
-                if member.id not in member_data.keys():
+                if not self.scoreKeeperDataManager.in_database(member.id):
                     self.scoreKeeperDataManager.add_new_member(member)
                     self.scoreKeeperDataManager.update_entry(member, self.CLASS_KEY, 0)
                 else:

@@ -72,8 +72,13 @@ swearcount = miBot.create_group(name="swearcount", description="Base Command For
 
 @swearcount.command(name='highscores') # Replies with the top 3 highest scores in the server
 async def showscores(ctx):
+    await ctx.defer()
     top_scores = list()
     top_scores = score_handler.get_top_three()
+
+    for i in range(len(top_scores)):
+         top_scores[0][i] = await miBot.get_or_fetch_user(top_scores[0][i]).display_name
+
     message_embed = discord.Embed(title="Top Three Swear Counts In The Server", color=0x00aaff)
     message_embed.set_author(name=miBot.user.name)
     message_embed.add_field(name=f"🟨 - {top_scores[0][0]}", value=f'{top_scores[0][1]} Points', inline=True)
@@ -85,8 +90,10 @@ async def showscores(ctx):
 @swearcount.command(name='score')
 async def user_score(ctx, user: discord.Option(str, "The Name Of The User", required=False, default=None)):
     if user == None:
-        user = ctx.author.name
-    member_score = score_handler.get_member_score(member_name=user)
+        user = ctx.author
+    else:
+        user = get_user_object(user)
+    member_score = score_handler.get_member_score(user)
     if member_score == None:
         message_embed = discord.Embed(title="That User Does Not Exist", color=0x00aaff)
         await ctx.respond(embed = message_embed, ephemeral=True)
@@ -137,11 +144,11 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
         user = get_user_object(user)
     member_quotes = quote_handler.retrieve_quotes(user)
     if len(member_quotes) == 0:
-        message_embed = discord.Embed(title=f"{user} Has No Quoted Messages", color=0x00aaff)
+        message_embed = discord.Embed(title=f"{user.display_name} Has No Quoted Messages", color=0x00aaff)
     else:
-        message_embed = discord.Embed(title=f"{user}'s Quoted Messages:", color=0x00aaff)    
+        message_embed = discord.Embed(title=f"{user.display_name}'s Quoted Messages:", color=0x00aaff)    
         for quote in member_quotes:
-            message_embed.add_field(name=quote, value=f"- {user}", inline=False)
+            message_embed.add_field(name=quote, value=f"- {user.display_name}", inline=False)
     await ctx.respond(embed=message_embed)
 
 #### MUSIC SYSTEM ####
@@ -268,7 +275,7 @@ async def on_message(message):
         message_as_list = message_handler.listify_message(message_raw=message)
         num_swear_words = message_handler.swear_check(message_as_list)
         if  num_swear_words != 0:
-            score_handler.alter_score(member_name=message.author, num=num_swear_words)
+            score_handler.alter_score(member=message.author, num=num_swear_words)
 
 @miBot.event
 async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run whenver a member joins.

@@ -28,8 +28,11 @@ class DataManager:
                         dtt[key] = lst
                         member_data[str(member_id)] = dtt # TODO: Add verbosity to this section.
                     else: 
-                        current_val = member_data[member_id][key] # TODO: Make sure this actually works and is done right like ensure_cat
-                        member_data[member_id][key] = value + current_val
+                        dtt = member_data[str(member_id)]
+                        scr = dtt[key]
+                        scr += value
+                        dtt[key] = scr
+                        member_data[str(member_id)] = dtt # TODO: Add verbosity to this section.
                 else:
                     member_data[member_id][key] = value
                 member_data.commit()
