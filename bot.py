@@ -52,7 +52,8 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
     else: 
         user_dis = get_user_object(user_name=user)
     if user_dis == None:
-        await ctx.respond('That User Doesn\'t Exist...')
+        message_embed = discord.Embed(title=f"That User Doesn\'t Exist...", color=0x00aaff)
+        await ctx.respond(embed=message_embed, ephemeral=True)
         return None
 
     user_roles = get_roles(user_dis)
@@ -60,7 +61,7 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
     joined_at = int(user_dis.joined_at.timestamp())
 
     message_embed = discord.Embed(title=f"Information About: __{user_dis.display_name}__", color=0x00aaff)
-    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d>\n(<t:{created_at}:R>", inline=True)
+    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d>\n(<t:{created_at}:R>)", inline=True)
     message_embed.add_field(name=f'Joined Server:', value=f"<t:{joined_at}:d>\n(<t:{joined_at}:R>)", inline=True)
     message_embed.add_field(name=f'Current Roles:', value=", ".join(r.mention for r in user_roles), inline=False)
     message_embed.set_footer(text=f'Requested By {ctx.author.name}')
@@ -283,6 +284,10 @@ async def on_message(message):
 @miBot.event
 async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run whenver a member joins.
     if not member.bot:
+
+        quote_handler.initialize_new_member(member)
+        score_handler.initialize_new_member(member)
+
         created_at = int(member.created_at.timestamp())
         message_embed = discord.Embed(title=f"Everyone Welcome __{member.name}__ To The Server", color=0x00aaff, description=f'ID: {member.id}')
         message_embed.add_field(name=f'Current Roles:', value=member.roles[0].name, inline=True)
@@ -291,12 +296,7 @@ async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run w
         if member.avatar != None:
             message_embed.set_thumbnail(url=member.avatar)
         
-        
-    else:
-       created_at = int(member.created_at.timestamp())
-       message_embed = discord.Embed(title=f"Everyone Welcome __{member.name}__ To The Server", color=0x00aaff, description=f'ID: {member.id}')
-
-    await member.guild.system_channel.send(embed=message_embed)
+        await member.guild.system_channel.send(embed=message_embed)
 
 
 #### MAIN LOOP RUN ####

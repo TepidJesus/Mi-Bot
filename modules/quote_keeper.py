@@ -35,3 +35,4 @@ class QuoteKeeper:
     def initialize_new_member(self, member):
         self.quoteKeeperDataManager.add_new_member(member)
         self.quoteKeeperDataManager.ensure_category_single(self.CLASS_KEY, [], member)
+        print(f"[INFO] A New Member, {member.name}, Has Been Added To The Quote Database")

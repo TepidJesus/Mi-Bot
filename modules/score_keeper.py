@@ -1,4 +1,3 @@
-import json
 from modules.database_manager import DataManager
 from sqlitedict import SqliteDict
 from operator import itemgetter
@@ -52,4 +51,5 @@ class ScoreKeeper:
     def initialize_new_member(self, member):
         self.scoreKeeperDataManager.add_new_member(member)
         self.scoreKeeperDataManager.ensure_category_single(self.CLASS_KEY, 0, member)
+        print(f"[INFO] A New Member, {member.name}, Has Been Added To The Score Database")
 
