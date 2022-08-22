@@ -48,3 +48,8 @@ class ScoreKeeper:
         with SqliteDict("./data/memberData.db") as member_data:
             member_score = member_data[member.id][self.CLASS_KEY]
         return member_score
+
+    def initialize_new_member(self, member):
+        self.scoreKeeperDataManager.add_new_member(member)
+        self.scoreKeeperDataManager.ensure_category_single(self.CLASS_KEY, 0, member)
+

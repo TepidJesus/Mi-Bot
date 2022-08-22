@@ -17,7 +17,7 @@ class QuoteKeeper:
                     self.quoteKeeperDataManager.add_new_member(member)
                     self.quoteKeeperDataManager.update_entry(member, self.CLASS_KEY, [])
                 else:
-                    continue  
+                    continue
 
     def add_quote(self, quote, member):
         success = self.quoteKeeperDataManager.update_entry(member, self.CLASS_KEY, quote, increment=True)
@@ -31,3 +31,7 @@ class QuoteKeeper:
             print(member_data[member.id])
             print(member_data.keys())
             return member_data[member.id][self.CLASS_KEY]
+
+    def initialize_new_member(self, member):
+        self.quoteKeeperDataManager.add_new_member(member)
+        self.quoteKeeperDataManager.ensure_category_single(self.CLASS_KEY, [], member)

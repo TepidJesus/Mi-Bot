@@ -61,6 +61,17 @@ class DataManager:
                     member_data.commit()
         return None
 
+    def ensure_category_single(self, category, starter_key, member):
+        with SqliteDict('./data/memberData.db') as member_data:
+            try:
+                    data = member_data[str(member.id)][category]
+            except:
+                print(f"[INFO] A New Category Has Been Added To The Database (ID: {member.id} Category: {category} Starter Key: {starter_key})")
+                dtt = member_data[str(member.id)]
+                dtt[category] = starter_key
+                member_data[str(member.id)] = dtt
+                member_data.commit()
+
     def get_current_members(self):
         member_ids = []
         with SqliteDict('./data/memberData.db') as member_data:

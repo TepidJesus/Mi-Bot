@@ -71,7 +71,7 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
 #### SWEAR COUNT SYSTEM #####
 swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker")
 
-@swearcount.command(name='highscores') #TODO: Add error catch for user that doesn't exist.
+@swearcount.command(name='highscores')
 async def showscores(ctx):
     await ctx.defer()
     top_scores = list()
@@ -282,15 +282,24 @@ async def on_message(message):
 
 @miBot.event
 async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run whenver a member joins.
-    created_at = int(member.created_at.timestamp())
-    message_embed = discord.Embed(title=f"Everyone Welcome __{member.name}__ To The Server", color=0x00aaff, description=f'ID: {member.id}')
-    message_embed.add_field(name=f'Current Roles:', value=member.roles[0].name, inline=True)
-    message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d> (<t:{created_at}:R>)", inline=True)
+    if not member.bot:
+        created_at = int(member.created_at.timestamp())
+        message_embed = discord.Embed(title=f"Everyone Welcome __{member.name}__ To The Server", color=0x00aaff, description=f'ID: {member.id}')
+        message_embed.add_field(name=f'Current Roles:', value=member.roles[0].name, inline=True)
+        message_embed.add_field(name=f'Created Account:', value=f"<t:{created_at}:d> (<t:{created_at}:R>)", inline=True)
 
-    if member.avatar != None:
-        message_embed.set_thumbnail(url=member.avatar)
-    
+        if member.avatar != None:
+            message_embed.set_thumbnail(url=member.avatar)
+        
+        
+    else:
+       created_at = int(member.created_at.timestamp())
+       message_embed = discord.Embed(title=f"Everyone Welcome __{member.name}__ To The Server", color=0x00aaff, description=f'ID: {member.id}')
+
     await member.guild.system_channel.send(embed=message_embed)
 
+
+#### MAIN LOOP RUN ####
 miBot.loop.create_task(idle_check())
 miBot.run(TOKEN)
+
