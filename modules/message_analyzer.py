@@ -1,14 +1,14 @@
 class Message_processor():
 
     def __init__(self):
-        with open('word-blacklist.txt', 'r') as raw_blacklist:
+        with open('./data/word-blacklist.txt', 'r') as raw_blacklist:
             self.word_blacklist_raw = raw_blacklist.read().split(',')
         self.word_blacklist = list()
         for word in self.word_blacklist_raw:
             word = word.strip(' ')
             self.word_blacklist.append(word)       
         print('[INFO] Word Blacklist Loaded')
-
+        
         self.message_log = dict()
         print('[INFO] Message Log Initialised')
 
