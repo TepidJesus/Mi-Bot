@@ -103,3 +103,12 @@ class DataManager:
             for member_id in self.get_current_members():
                 print(f"{member_id}: {member_data[member_id]}")
         print("[INFO] Dump Complete")
+
+    def get_data(self, member, category):
+        if not self.in_database(member.id):
+            return None
+        with SqliteDict('./data/memberData.db') as member_data:
+            try:
+                return member_data[member.id][category]
+            except KeyError:
+                return None
