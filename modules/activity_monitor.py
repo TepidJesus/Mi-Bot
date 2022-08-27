@@ -13,17 +13,23 @@ class ActivityMonitor:
         with SqliteDict("./data/memberData.db") as member_data:
             for member in guild_members:
                 print(f"{member.display_name} is currently doing {member.activity}")
+
                 if len(member.activities) != 0:
                     main_activity = member.activities[0] 
                     current_history = self.activityMonitorDataManager.get_data(member, self.CLASS_KEY) # Dictionary
                     if current_history == None:
                         return
                     if main_activity.name not in current_history.keys():
-                        current_history[main_activity.name] = 5
+                        dtt = member_data[str(member.id)]
+                        dct = dtt[self.CLASS_KEY]
+                        dct[main_activity.name] = 5
+                        dtt[self.CLASS_KEY] = dct
+                        member_data[str(member.id)] = dtt
                     else:
-                        current_time = current_history[main_activity.name]
-                        current_time += 5
-                        current_history[main_activity.name] = current_time
-        member_data.commit()
-        
-        self.activityMonitorDataManager.dump_database()
+                        dtt = member_data[str(member.id)]
+                        dct = dtt[self.CLASS_KEY]
+                        dct[main_activity.name] += 5
+                        dtt[self.CLASS_KEY] = dct
+                        member_data[str(member.id)] = dtt
+
+            member_data.commit()
