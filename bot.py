@@ -10,6 +10,7 @@ from modules.message_analyzer import Message_processor
 from modules.score_keeper import ScoreKeeper
 from modules.quote_keeper import QuoteKeeper
 from modules.database_manager import DataManager
+from modules.activity_monitor import ActivityMonitor
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -18,6 +19,7 @@ intents.message_content = True
 intents.members = True
 intents.voice_states = True
 intents.guild_messages = True
+intents.presences = True
 miBot = commands.Bot(intents = intents)
 
 message_handler = Message_processor()
@@ -255,8 +257,10 @@ async def on_connect():
     print(f'[INFO] Mi Bot Has Connected To Discord...')
     global score_handler
     global quote_handler
+    global activity_handler
     score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
     quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
+    activity_handler = ActivityMonitor(data_manager)
 
 
 @miBot.event
@@ -268,6 +272,9 @@ async def on_ready():
 
         quote_handler.refresh_quotes(guild_members=miBot.get_all_members())
         print(f'[INFO] Quotes Loaded')
+
+        miBot.loop.create_task(activity_handler.full_activity_check(bot_instance=miBot))
+        print(f'[INFO] Initial Activity Check Complete')
 
 @miBot.event
 async def on_message(message):
