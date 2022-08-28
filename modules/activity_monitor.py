@@ -1,6 +1,16 @@
 from sqlitedict import SqliteDict
 import asyncio
 
+#TODO: Store weekly and monthly, yearly stats using list inside category
+#TODO: Add historic data section which will store previous years of data
+#TODO: Implement automaticly moving weekly to monthly data and to yearly data
+#TODO: Finish get_weelky_stats()
+#TODO: Finish get_monthly_stats()
+#TODO: Finish get_yearly_stats()
+#TODO: Add weekly event that displays weekly stats for a guild (Top Games, most hours played by a member, etc)
+#TODO: Add monthly event that displays monthly stats for a guild (Top Games, most hours played by a member, etc)
+#TODO: Add yearly event that displays yearly stats for a guild (Top Games, most hours played by a member, etc)
+
 class ActivityMonitor:
 
     CLASS_KEY = "ActivityHistory"
@@ -38,3 +48,8 @@ class ActivityMonitor:
                 member_data.commit()
                 print("[INFO] Activity Check Complete")
                 self.activityMonitorDataManager.dump_database()
+
+    def get_activity_stats(self, member):
+            return self.activityMonitorDataManager.get_data(member, self.CLASS_KEY)
+
+    # def get_guild_weekly_stats(self):
