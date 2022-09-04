@@ -21,15 +21,22 @@ class UserActivity:
         self.id = obj.application_id
         self.picture = obj.large_image_url
 
+    def __eq__(self, other):
+        if other.id == self.id:
+            return True
+        return False
+
     def __str__(self):
        return (f"Name: {self.name} ({self.id}) Time: {self.play_time}")
-
 
     def print_times(self):
         print(f"Week: {self.play_time['week']}")
         print(f"Month: {self.play_time['month']}")
         print(f"Year: {self.play_time['year']}")
         print(f"Total: {self.play_time['total']}")
+
+    def get_weekly_time(self):
+        return self.play_time["week"]
 
 class ActivityMonitor:
 
@@ -78,16 +85,19 @@ class ActivityMonitor:
         """
         total_guild_hours = 0
         most_played_game = None
-        played_games = {}
+        played_games = []
+        top_member = None
         with SqliteDict("./data/memberData.db") as member_data:
 
             for member in self.activityMonitorDataManager.get_current_guild().members:
+                member_played_games = []
+                member_time = 0
                 if not member.bot:
                     dtt = member_data[str(member.id)]
-                    dct = dtt[self.CLASS_KEY][0]
-                    for game in dct.keys():
-                        if game not in played_games.keys():
-                            played_games[game] = dct[game]
-                        else:
-                            played_games[game] += dct[game]
-
+                    lst = dtt[self.CLASS_KEY][0]
+                    for game in lst:
+                        if game not in played_games:
+                            member_played_games.append(game)
+                            member_time += game.get_weekly_time()
+                    
+                        
