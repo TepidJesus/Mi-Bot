@@ -80,11 +80,10 @@ class ActivityMonitor:
     def get_guild_weekly_stats(self):
         """ Returns the following as a tuple:
             - Total Hours of games played by the guild so far this week (int).
-            - Most played game by the guild this week and hours of it (String, Int, game pic)
-            - Member who played the most hours during the week and their most played game (Member, int, game)
+            - Most played game by the guild this week and hours of it (game)
+            - Member who played the most hours during the week and their most played game (Member, time, game)
         """
         total_guild_hours = 0
-        most_played_game = None
         played_games = []
         top_member = None
         with SqliteDict("./data/memberData.db") as member_data:
@@ -96,8 +95,25 @@ class ActivityMonitor:
                     dtt = member_data[str(member.id)]
                     lst = dtt[self.CLASS_KEY][0]
                     for game in lst:
-                        if game not in played_games:
-                            member_played_games.append(game)
-                            member_time += game.get_weekly_time()
+                        member_played_games.append(game.copy())
+                        member_time += game.get_weekly_time()
+                        total_guild_hours += game.get_weekly_time()
                     
+                    total_guild_hours += member_time
+
+                    if top_member == None or member_time > top_member[1]:
+                        top_member = (member, member_time, max(member_played_games, key=lambda x: x.get_weekly_time()))
+                    else:
+                        continue
+                    
+                    for game in member_played_games:
+                        if game not in played_games:
+                            played_games.append(game)
+                        else:
+                            obj = next((act for act in played_games if act.id == game.id), None)
+                            obj.play_time["week"] += game.get_weekly_time()
+
+        most_played_game = max(member_played_games, key=lambda x: x.get_weekly_time())
+
+        return (total_guild_hours, most_played_game, top_member)
                         
