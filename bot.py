@@ -276,6 +276,7 @@ async def on_ready():
 
         miBot.loop.create_task(activity_handler.full_activity_check())
         print(f'[INFO] Initial Activity Check Complete')
+        display_guild_weekly_stats.start()
 
 @miBot.event
 async def on_message(message):
@@ -306,10 +307,22 @@ async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run w
         
         await member.guild.system_channel.send(embed=message_embed)
 
-@tasks.loop(hours=168)
+@tasks.loop(seconds=30) # Should be Set to 168 Hours Vefore Deployment
 async def display_guild_weekly_stats():
-    stats = score_handler.get_guild_weekly_stats()
+    stats = activity_handler.get_guild_weekly_stats()
+    message_embed = discord.Embed(title="Weekly Activity Stats:", color=0x00aaff)
+    message_embed.add_field(name=f"This Week, You All Collectively Spent: ", value=f"{stats[0]} Playing Games")
+    message_embed.add_field(name=f"This Weeks Most Played Game Was:", value=f"{stats[1].name}")
+    message_embed.set_thumbnail(url=stats[1].picture)
 
+    await miBot.guilds[0].system_channel.send(embed=message_embed)
+
+    message_embed = discord.Embed(title="This Weeks Top Member Is:", color=0x00aaff)
+    message_embed.add_field(name=f"{stats[2][0].display_name}", value=f"Who Spent {stats[2][1]} Playing Games")
+    message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_weekly_time()}")
+    message_embed.set_thumbnail(url=stats[2][2].picture)
+
+    await miBot.guilds[0].system_channel.send(embed=message_embed)
 
 #### MAIN LOOP RUN ####
 miBot.loop.create_task(idle_check())
