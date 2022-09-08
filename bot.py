@@ -260,7 +260,7 @@ async def on_connect():
     global activity_handler
     score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
     quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
-    activity_handler = ActivityMonitor(data_manager)
+    activity_handler = ActivityMonitor(data_manager, miBot)
 
 
 @miBot.event
@@ -273,7 +273,7 @@ async def on_ready():
         quote_handler.refresh_quotes(guild_members=miBot.get_all_members())
         print(f'[INFO] Quotes Loaded')
 
-        miBot.loop.create_task(activity_handler.full_activity_check(bot_instance=miBot))
+        miBot.loop.create_task(activity_handler.full_activity_check())
         print(f'[INFO] Initial Activity Check Complete')
 
 @miBot.event
