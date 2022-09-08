@@ -79,12 +79,11 @@ class ActivityMonitor:
                 member_data.commit()
                 print("[INFO] Activity Check Complete")
                 self.activityMonitorDataManager.dump_database()
-                self.get_guild_weekly_stats()
 
     def get_weekly_activity_stats(self, member):
-            return self.activityMonitorDataManager.get_data(member, self.CLASS_KEY)[0]
+            return self.activityMonitorDataManager.get_data(member, self.CLASS_KEY)
 
-    def get_guild_weekly_stats(self):
+    async def get_guild_weekly_stats(self):
         """ Returns the following as a tuple:
             - Total Hours of games played by the guild so far this week (int).
             - Most played game by the guild this week and hours of it (game)

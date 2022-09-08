@@ -2,7 +2,8 @@ import discord
 from dotenv import load_dotenv
 import os
 import asyncio
-from discord.ext import commands
+from discord.ext import commands, tasks
+import datetime
 
 from modules.music_tracker import YTDLSource
 from modules.music_tracker import MusicHandler
@@ -304,6 +305,10 @@ async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run w
             message_embed.set_thumbnail(url=member.avatar)
         
         await member.guild.system_channel.send(embed=message_embed)
+
+@tasks.loop(hours=168)
+async def display_guild_weekly_stats():
+    stats = score_handler.get_guild_weekly_stats()
 
 
 #### MAIN LOOP RUN ####
