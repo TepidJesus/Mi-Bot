@@ -312,7 +312,7 @@ async def display_guild_stats():
 
     curr_day = datetime.date.today()
     if curr_day.weekday() == 0 and curr_day.day != 1:
-        stats = activity_handler.get_guild_weekly_stats()
+        stats = activity_handler.get_guild_stats('weekly')
         message_embed = discord.Embed(title="Weekly Activity Stats:", color=0x00aaff, description=f"----------------------------------------")
         message_embed.add_field(name=f"Last Week, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
         message_embed.add_field(name=f"Last Weeks Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_weekly_time() // 60} Hours")
@@ -330,7 +330,7 @@ async def display_guild_stats():
         await miBot.guilds[0].system_channel.send(embed=message_embed)
 
     elif curr_day.day == 1 and curr_day.month != 1:
-        stats = activity_handler.get_guild_monthly_stats()
+        stats = activity_handler.get_guild_stats('monthly')
         message_embed = discord.Embed(title="Monthly Activity Stats:", color=0x00aaff, description=f"----------------------------------------")
         message_embed.add_field(name=f"This Month, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
         message_embed.add_field(name=f"This Months Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_monthly_time() // 60} Hours")
@@ -348,7 +348,7 @@ async def display_guild_stats():
         await miBot.guilds[0].system_channel.send(embed=message_embed)
     
     elif curr_day.day == 1 and curr_day.month == 1:
-        stats = activity_handler.get_guild_yearly_stats()
+        stats = activity_handler.get_guild_stats('yearly')
         message_embed = discord.Embed(title="Yearly Activity Stats:", color=0x00aaff, description=f"----------------------------------------")
         message_embed.add_field(name=f"This Year, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
         message_embed.add_field(name=f"This Years Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_yearly_time() // 60} Hours")
