@@ -1,7 +1,7 @@
 from sqlitedict import SqliteDict
 import asyncio
 import copy as cp
-
+import datetime
 
 #TODO: Store weekly and monthly, yearly stats using list inside category LAYOUT. 
 # [WEEKLY{activity.name: time, ...}, MONTHLY{activity.name: time, ...}, YEARLY{activity.name: time, ...}]
@@ -21,7 +21,7 @@ class UserActivity:
         self.name = obj.name
         self.play_time = {"week": 5, "month": 0, "year": 0, "total": 0}
         self.id = obj.application_id
-        self.picture = obj.large_image_url
+        self.picture = obj.small_image_url if obj.small_image_url != None else obj.large_image_url
 
     def __eq__(self, other):
         if other.id == self.id:
@@ -29,7 +29,7 @@ class UserActivity:
         return False
 
     def __str__(self):
-       return (f"Name: {self.name} ({self.id}) Time: {self.play_time}")
+       return (f"Name: {self.name} ({self.id}) Time: {self.play_time} Picture: {self.picture}")
 
     def print_times(self):
         print(f"Week: {self.play_time['week']}")
@@ -48,6 +48,7 @@ class ActivityMonitor:
         self.activityMonitorDataManager = dataManager
         self.activityMonitorDataManager.ensure_category(self.CLASS_KEY, []) # Stores Activity objects
         self.bot_instance = bot_instance
+        self.last_date = datetime.date.now()
 
     async def full_activity_check(self): # Will be run every 5 minutes, so will assume user has been doing a given activity for that time.
         while True:
@@ -57,6 +58,7 @@ class ActivityMonitor:
                     if not member.bot:
                         if len(member.activities) != 0:
                             main_activity = member.activities[0] 
+                            print(main_activity)
                             current_history = self.activityMonitorDataManager.get_data(member, self.CLASS_KEY) # Returns list
                             print(current_history)
                             if not any(curr.id == main_activity.application_id for curr in current_history): # If the activity is not in the list
@@ -71,7 +73,7 @@ class ActivityMonitor:
                                 dtt = member_data[str(member.id)]
                                 dct = dtt[self.CLASS_KEY]
                                 obj = next((act for act in dct if act.id == main_activity.application_id), None)
-                                obj.play_time["week"] += 5
+                                obj.play_time["week"] += 500
                                 dtt[self.CLASS_KEY] = dct
                                 member_data[str(member.id)] = dtt
                 
@@ -83,7 +85,25 @@ class ActivityMonitor:
     def get_weekly_activity_stats(self, member):
             return self.activityMonitorDataManager.get_data(member, self.CLASS_KEY)
 
-    async def get_guild_weekly_stats(self):
+    def move_weekly_to_monthly(self, activity):
+        curr_weekly = activity.play_time["week"]
+        self.activity.play_time["month"] += curr_weekly
+        self.activity.play_time["week"] = 0
+        return
+
+    def move_monthly_to_yearly(self, activity):
+        curr_monthly = activity.play_time["month"]
+        self.activity.play_time["year"] += curr_monthly
+        self.activity.play_time["month"] = 0
+        return
+
+    def move_yearly_to_total(self, activity):
+        curr_yearly = activity.play_time["year"]
+        self.activity.play_time["total"] += curr_yearly
+        self.activity.play_time["year"] = 0
+        return
+
+    def get_guild_weekly_stats(self):
         """ Returns the following as a tuple:
             - Total Hours of games played by the guild so far this week (int).
             - Most played game by the guild this week and hours of it (game)
@@ -91,7 +111,7 @@ class ActivityMonitor:
         """
         total_guild_hours = 0
         played_games = []
-        top_member = None 
+        top_member = None
         with SqliteDict("./data/memberData.db") as member_data:
 
             for member in self.bot_instance.get_all_members():

@@ -276,7 +276,7 @@ async def on_ready():
 
         miBot.loop.create_task(activity_handler.full_activity_check())
         print(f'[INFO] Initial Activity Check Complete')
-        display_guild_weekly_stats.start()
+        display_guild_stats.start()
 
 @miBot.event
 async def on_message(message):
@@ -307,18 +307,20 @@ async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run w
         
         await member.guild.system_channel.send(embed=message_embed)
 
-@tasks.loop(seconds=30) # Should be Set to 168 Hours Before Deployment
-async def display_guild_weekly_stats():
+@tasks.loop(hours=24) # Should be Set to 168 Hours Before Deployment
+async def display_guild_stats():
+
+    curr_date = datetime.date.today()
     stats = activity_handler.get_guild_weekly_stats()
     message_embed = discord.Embed(title="Weekly Activity Stats:", color=0x00aaff)
-    message_embed.add_field(name=f"This Week, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
-    message_embed.add_field(name=f"This Weeks Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_weekly_time() // 60} Hours")
+    message_embed.add_field(name=f"Last Week, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
+    message_embed.add_field(name=f"Last Weeks Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_weekly_time() // 60} Hours")
     if stats[1].picture != None:
         message_embed.set_thumbnail(url=stats[1].picture)
 
     await miBot.guilds[0].system_channel.send(embed=message_embed)
 
-    message_embed = discord.Embed(title=f"This Weeks Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
+    message_embed = discord.Embed(title=f"Last Weeks Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
     message_embed.add_field(name=f"Total Active Time:", value=f"{stats[2][1] // 60} Hours")
     message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_weekly_time() // 60} Hours", inline=True)
     if stats[2][2].picture != None:
