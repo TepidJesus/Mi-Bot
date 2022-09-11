@@ -40,6 +40,12 @@ class UserActivity:
     def get_weekly_time(self):
         return self.play_time["week"]
 
+    def get_monthly_time(self):
+        return self.play_time["month"]
+
+    def get_monthly_time(self):
+        return self.play_time["year"]
+
 class ActivityMonitor:
 
     CLASS_KEY = "ActivityHistory"
@@ -48,7 +54,7 @@ class ActivityMonitor:
         self.activityMonitorDataManager = dataManager
         self.activityMonitorDataManager.ensure_category(self.CLASS_KEY, []) # Stores Activity objects
         self.bot_instance = bot_instance
-        self.last_date = datetime.date.now()
+        self.last_date = datetime.date.today()
 
     async def full_activity_check(self): # Will be run every 5 minutes, so will assume user has been doing a given activity for that time.
         while True:
@@ -82,9 +88,6 @@ class ActivityMonitor:
                 print("[INFO] Activity Check Complete")
                 self.activityMonitorDataManager.dump_database()
 
-    def get_weekly_activity_stats(self, member):
-            return self.activityMonitorDataManager.get_data(member, self.CLASS_KEY)
-
     def move_weekly_to_monthly(self, activity):
         curr_weekly = activity.play_time["week"]
         self.activity.play_time["month"] += curr_weekly
@@ -103,15 +106,19 @@ class ActivityMonitor:
         self.activity.play_time["year"] = 0
         return
 
-    def get_guild_weekly_stats(self):
+    def get_guild_stats(self, period):
         """ Returns the following as a tuple:
             - Total Hours of games played by the guild so far this week (int).
             - Most played game by the guild this week and hours of it (game)
             - Member who played the most hours during the week and their most played game (Member, time, game)
         """
+        if period != "weekly" and period != "monthly" and period != "yearly":
+            return None
+
         total_guild_hours = 0
         played_games = []
         top_member = None
+
         with SqliteDict("./data/memberData.db") as member_data:
 
             for member in self.bot_instance.get_all_members():
@@ -122,25 +129,46 @@ class ActivityMonitor:
                     lst = dtt[self.CLASS_KEY]
                     for game in lst:
                         member_played_games.append(cp.copy(game))
-                        member_time += game.get_weekly_time()
-                        total_guild_hours += game.get_weekly_time()
+
+                        if period == "monthly":
+                            member_time += game.get_monthly_time()
+                            total_guild_hours += game.get_monthly_time()
+                        elif period == "yearly":
+                            member_time += game.get_yearly_time()
+                            total_guild_hours += game.get_yearly_time()
+                        else:
+                            total_guild_hours += game.get_weekly_time()
+                            member_time += game.get_weekly_time()
                     
                     total_guild_hours += member_time
 
                     if (top_member == None or member_time > top_member[1]) and len(member_played_games) != 0:
-                        top_member = (member, member_time, max(member_played_games, key=lambda x: x.get_weekly_time()))
-                    else:
-                        continue
+                        if period == "monthly":
+                            top_member = (member, member_time, max(member_played_games, key=lambda x: x.get_monthly_time()))
+                        elif period == "yearly":
+                            top_member = (member, member_time, max(member_played_games, key=lambda x: x.get_yearly_time()))
+                        else:
+                            top_member = (member, member_time, max(member_played_games, key=lambda x: x.get_weekly_time()))
                     
                     for game in member_played_games:
                         if game not in played_games:
                             played_games.append(game)
                         else:
                             obj = next((act for act in played_games if act.id == game.id), None)
-                            obj.play_time["week"] += game.get_weekly_time()
+                            if period == "monthly":
+                                obj.play_time["month"] += game.get_monthly_time()
+                            elif period == "yearly":
+                                obj.play_time["year"] += game.get_yearly_time()
+                            else:
+                                obj.play_time["week"] += game.get_weekly_time()
 
         if len(played_games) != 0:
-            most_played_game = max(played_games, key=lambda x: x.get_weekly_time())
+            if period == "monthly":
+                most_played_game = max(played_games, key=lambda x: x.get_monthly_time())
+            elif period == "yearly":
+                most_played_game = max(played_games, key=lambda x: x.get_yearly_time())
+            else:
+                most_played_game = max(played_games, key=lambda x: x.get_weekly_time())
         else:
             most_played_game = None
 
