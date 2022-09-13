@@ -327,6 +327,8 @@ async def display_guild_stats():
         if stats[2][2].picture != None:
             message_embed.set_thumbnail(url=stats[2][2].picture)
 
+        activity_handler.move_weekly_to_monthly()
+
         await miBot.guilds[0].system_channel.send(embed=message_embed)
 
     elif curr_day.day == 1 and curr_day.month != 1:
@@ -345,6 +347,8 @@ async def display_guild_stats():
         if stats[2][2].picture != None:
             message_embed.set_thumbnail(url=stats[2][2].picture)
 
+        activity_handler.move_monthly_to_yearly()
+
         await miBot.guilds[0].system_channel.send(embed=message_embed)
     
     elif curr_day.day == 1 and curr_day.month == 1:
@@ -362,6 +366,8 @@ async def display_guild_stats():
         message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_yearly_time() // 60} Hours", inline=True)
         if stats[2][2].picture != None:
             message_embed.set_thumbnail(url=stats[2][2].picture)
+
+        activity_handler.move_yearly_to_total()
 
         await miBot.guilds[0].system_channel.send(embed=message_embed)
 

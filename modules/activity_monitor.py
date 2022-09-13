@@ -88,22 +88,28 @@ class ActivityMonitor:
                 print("[INFO] Activity Check Complete")
                 self.activityMonitorDataManager.dump_database()
 
-    def move_weekly_to_monthly(self, activity):
-        curr_weekly = activity.play_time["week"]
-        self.activity.play_time["month"] += curr_weekly
-        self.activity.play_time["week"] = 0
+    def move_weekly_to_monthly(self):
+        for member in self.bot_instance.get_all_members():
+            for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
+                curr_weekly = activity.play_time["week"]
+                self.activity.play_time["month"] += curr_weekly
+                self.activity.play_time["week"] = 0
         return
 
     def move_monthly_to_yearly(self, activity):
-        curr_monthly = activity.play_time["month"]
-        self.activity.play_time["year"] += curr_monthly
-        self.activity.play_time["month"] = 0
+        for member in self.bot_instance.get_all_members():
+            for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
+                curr_monthly = activity.play_time["month"]
+                self.activity.play_time["year"] += curr_monthly
+                self.activity.play_time["month"] = 0
         return
 
     def move_yearly_to_total(self, activity):
-        curr_yearly = activity.play_time["year"]
-        self.activity.play_time["total"] += curr_yearly
-        self.activity.play_time["year"] = 0
+        for member in self.bot_instance.get_all_members():
+            for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
+                curr_yearly = activity.play_time["year"]
+                self.activity.play_time["total"] += curr_yearly
+                self.activity.play_time["year"] = 0
         return
 
     def get_guild_stats(self, period):
