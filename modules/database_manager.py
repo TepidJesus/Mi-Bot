@@ -98,11 +98,11 @@ class DataManager:
         return True
 
     def dump_database(self):
-        print("[INFO] Dumping Database...")
+        print("[INFO] Dumping Database...\n")
         with SqliteDict('./data/memberData.db') as member_data:
             for member_id in self.get_current_members():
                 print(f"{member_id}: {member_data[member_id]}")
-        print("[INFO] Dump Complete")
+        print("\n[INFO] Dump Complete\n")
 
     def get_data(self, member, category):
         if not self.in_database(member.id):

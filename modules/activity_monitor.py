@@ -31,7 +31,7 @@ class UserActivity:
     def get_monthly_time(self):
         return self.play_time["month"]
 
-    def get_monthly_time(self):
+    def get_yearly_time(self):
         return self.play_time["year"]
 
 class ActivityMonitor:
@@ -82,29 +82,42 @@ class ActivityMonitor:
                     dtt = member_data[str(member.id)]
                     dct = dtt[self.CLASS_KEY]
                     for activity in dct:
-                        # obj = next((act for act in dct if act.id == activity.id), None)
                         curr_weekly = activity.play_time["week"]
                         activity.play_time["month"] += curr_weekly
                         activity.play_time["week"] = 0
-                        #dtt[self.CLASS_KEY] = dct
+                    dtt[self.CLASS_KEY] = dct
                     member_data[str(member.id)] = dtt
                     member_data.commit()
         return
 
     def move_monthly_to_yearly(self):
-        for member in self.bot_instance.get_all_members():
-            for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
-                curr_monthly = activity.play_time["month"]
-                activity.play_time["year"] += curr_monthly
-                activity.play_time["month"] = 0
+        with SqliteDict("./data/memberData.db") as member_data:
+            for member in self.bot_instance.get_all_members():
+                if not member.bot:
+                    dtt = member_data[str(member.id)]
+                    dct = dtt[self.CLASS_KEY]
+                    for activity in dct:
+                        curr_weekly = activity.play_time["month"]
+                        activity.play_time["year"] += curr_weekly
+                        activity.play_time["month"] = 0
+                    dtt[self.CLASS_KEY] = dct
+                    member_data[str(member.id)] = dtt
+                    member_data.commit()
         return
 
     def move_yearly_to_total(self):
-        for member in self.bot_instance.get_all_members():
-            for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
-                curr_yearly = activity.play_time["year"]
-                activity.play_time["total"] += curr_yearly
-                activity.play_time["year"] = 0
+        with SqliteDict("./data/memberData.db") as member_data:
+            for member in self.bot_instance.get_all_members():
+                if not member.bot:
+                    dtt = member_data[str(member.id)]
+                    dct = dtt[self.CLASS_KEY]
+                    for activity in dct:
+                        curr_weekly = activity.play_time["year"]
+                        activity.play_time["total"] += curr_weekly
+                        activity.play_time["year"] = 0
+                    dtt[self.CLASS_KEY] = dct
+                    member_data[str(member.id)] = dtt
+                    member_data.commit()
         return
 
     def get_guild_stats(self, period):
