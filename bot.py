@@ -2,7 +2,8 @@ import discord
 from dotenv import load_dotenv
 import os
 import asyncio
-from discord.ext import commands
+from discord.ext import commands, tasks
+import datetime
 
 from modules.music_tracker import YTDLSource
 from modules.music_tracker import MusicHandler
@@ -10,6 +11,7 @@ from modules.message_analyzer import Message_processor
 from modules.score_keeper import ScoreKeeper
 from modules.quote_keeper import QuoteKeeper
 from modules.database_manager import DataManager
+from modules.activity_monitor import ActivityMonitor
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -18,6 +20,7 @@ intents.message_content = True
 intents.members = True
 intents.voice_states = True
 intents.guild_messages = True
+intents.presences = True
 miBot = commands.Bot(intents = intents)
 
 message_handler = Message_processor()
@@ -255,8 +258,10 @@ async def on_connect():
     print(f'[INFO] Mi Bot Has Connected To Discord...')
     global score_handler
     global quote_handler
+    global activity_handler
     score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
     quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
+    activity_handler = ActivityMonitor(data_manager, miBot)
 
 
 @miBot.event
@@ -268,6 +273,10 @@ async def on_ready():
 
         quote_handler.refresh_quotes(guild_members=miBot.get_all_members())
         print(f'[INFO] Quotes Loaded')
+
+        miBot.loop.create_task(activity_handler.full_activity_check())
+        print(f'[INFO] Initial Activity Check Complete')
+        display_guild_stats.start()
 
 @miBot.event
 async def on_message(message):
@@ -298,6 +307,81 @@ async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run w
         
         await member.guild.system_channel.send(embed=message_embed)
 
+@tasks.loop(hours=24)
+async def display_guild_stats():
+
+    curr_day = datetime.date.today()
+    if curr_day.weekday() == 0 and curr_day.day != 1:
+        try:
+            stats = activity_handler.get_guild_stats('weekly')
+            message_embed = discord.Embed(title="Weekly Activity Stats:", color=0x00aaff, description=f"----------------------------------------")
+            message_embed.add_field(name=f"Last Week, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
+            message_embed.add_field(name=f"Last Weeks Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_weekly_time() // 60} Hours")
+            if stats[1].picture != None:
+                message_embed.set_thumbnail(url=stats[1].picture)
+
+            await miBot.guilds[0].system_channel.send(embed=message_embed)
+
+            message_embed = discord.Embed(title=f"Last Weeks Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
+            message_embed.add_field(name=f"Total Active Time:", value=f"{stats[2][1] // 60} Hours")
+            message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_weekly_time() // 60} Hours", inline=True)
+            if stats[2][2].picture != None:
+                message_embed.set_thumbnail(url=stats[2][2].picture)
+
+            activity_handler.move_weekly_to_monthly()
+
+            await miBot.guilds[0].system_channel.send(embed=message_embed)
+        except:
+            print(f'[ERROR] Failed To Display Stats')
+
+    elif curr_day.day == 1 and curr_day.month != 1:
+        try:
+            stats = activity_handler.get_guild_stats('monthly')
+            message_embed = discord.Embed(title="Monthly Activity Stats:", color=0x00aaff, description=f"----------------------------------------")
+            message_embed.add_field(name=f"This Month, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
+            message_embed.add_field(name=f"This Months Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_monthly_time() // 60} Hours")
+            if stats[1].picture != None:
+                message_embed.set_thumbnail(url=stats[1].picture)
+
+            await miBot.guilds[0].system_channel.send(embed=message_embed)
+
+            message_embed = discord.Embed(title=f"This Months Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
+            message_embed.add_field(name=f"Total Active Time:", value=f"{stats[2][1] // 60} Hours")
+            message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_monthly_time() // 60} Hours", inline=True)
+            if stats[2][2].picture != None:
+                message_embed.set_thumbnail(url=stats[2][2].picture)
+
+            activity_handler.move_monthly_to_yearly()
+
+            await miBot.guilds[0].system_channel.send(embed=message_embed)
+        except:
+            print(f'[ERROR] Failed To Display Stats')
+    
+    elif curr_day.day == 1 and curr_day.month == 1:
+        try:
+            stats = activity_handler.get_guild_stats('yearly')
+            message_embed = discord.Embed(title="Yearly Activity Stats:", color=0x00aaff, description=f"----------------------------------------")
+            message_embed.add_field(name=f"This Year, You All Collectively Spent: ", value=f"{stats[0] // 60} Hours Playing Games")
+            message_embed.add_field(name=f"This Years Most Played Game Was:", value=f"{stats[1].name} For {stats[1].get_yearly_time() // 60} Hours")
+            if stats[1].picture != None:
+                message_embed.set_thumbnail(url=stats[1].picture)
+
+            await miBot.guilds[0].system_channel.send(embed=message_embed)
+
+            message_embed = discord.Embed(title=f"This Years Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
+            message_embed.add_field(name=f"Total Active Time:", value=f"{stats[2][1] // 60} Hours")
+            message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_yearly_time() // 60} Hours", inline=True)
+            if stats[2][2].picture != None:
+                message_embed.set_thumbnail(url=stats[2][2].picture)
+
+            activity_handler.move_yearly_to_total()
+
+            await miBot.guilds[0].system_channel.send(embed=message_embed)
+        except:
+            print(f'[ERROR] Failed To Display Stats')
+
+
+        
 
 #### MAIN LOOP RUN ####
 miBot.loop.create_task(idle_check())
