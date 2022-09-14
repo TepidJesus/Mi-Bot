@@ -3,18 +3,6 @@ import asyncio
 import copy as cp
 import datetime
 
-#TODO: Store weekly and monthly, yearly stats using list inside category LAYOUT. 
-# [WEEKLY{activity.name: time, ...}, MONTHLY{activity.name: time, ...}, YEARLY{activity.name: time, ...}]
-#TODO: Add historic data section which will store previous years of data
-#TODO: Implement automaticly moving weekly to monthly data and to yearly data
-#TODO: Finish get_weelky_stats()
-#TODO: Finish get_monthly_stats()
-#TODO: Finish get_yearly_stats()
-#TODO: Add weekly event that displays weekly stats for a guild (Top Games, most hours played by a member, etc)
-#TODO: Add monthly event that displays monthly stats for a guild (Top Games, most hours played by a member, etc)
-#TODO: Add yearly event that displays yearly stats for a guild (Top Games, most hours played by a member, etc)
-
-
 class UserActivity:
 
     def __init__(self, obj):
@@ -58,58 +46,65 @@ class ActivityMonitor:
 
     async def full_activity_check(self): # Will be run every 5 minutes, so will assume user has been doing a given activity for that time.
         while True:
-            await asyncio.sleep(15)
+            await asyncio.sleep(300)
             with SqliteDict("./data/memberData.db") as member_data:
                 for member in self.bot_instance.get_all_members():
                     if not member.bot:
                         if len(member.activities) != 0:
-                            main_activity = member.activities[0] 
-                            print(main_activity)
+                            main_activity = member.activities[0]
                             current_history = self.activityMonitorDataManager.get_data(member, self.CLASS_KEY) # Returns list
-                            print(current_history)
                             if not any(curr.id == main_activity.application_id for curr in current_history): # If the activity is not in the list
-                                print('Failed Comparison')
-                                dtt = member_data[str(member.id)]
-                                dct = dtt[self.CLASS_KEY]
-                                dct.append(UserActivity(main_activity))
-                                dtt[self.CLASS_KEY] = dct
-                                member_data[str(member.id)] = dtt
+                                try:
+                                    dtt = member_data[str(member.id)]
+                                    dct = dtt[self.CLASS_KEY]
+                                    dct.append(UserActivity(main_activity))
+                                    dtt[self.CLASS_KEY] = dct
+                                    member_data[str(member.id)] = dtt
+                                except:
+                                    continue
                             else:
-                                print('Passed Comparison')
                                 dtt = member_data[str(member.id)]
                                 dct = dtt[self.CLASS_KEY]
                                 obj = next((act for act in dct if act.id == main_activity.application_id), None)
-                                obj.play_time["week"] += 500
+                                obj.play_time["week"] += 5
                                 dtt[self.CLASS_KEY] = dct
                                 member_data[str(member.id)] = dtt
                 
 
                 member_data.commit()
                 print("[INFO] Activity Check Complete")
-                self.activityMonitorDataManager.dump_database()
+
 
     def move_weekly_to_monthly(self):
-        for member in self.bot_instance.get_all_members():
-            for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
-                curr_weekly = activity.play_time["week"]
-                self.activity.play_time["month"] += curr_weekly
-                self.activity.play_time["week"] = 0
+        with SqliteDict("./data/memberData.db") as member_data:
+            for member in self.bot_instance.get_all_members():
+                if not member.bot:
+                    dtt = member_data[str(member.id)]
+                    dct = dtt[self.CLASS_KEY]
+                    for activity in dct:
+                        # obj = next((act for act in dct if act.id == activity.id), None)
+                        curr_weekly = activity.play_time["week"]
+                        activity.play_time["month"] += curr_weekly
+                        activity.play_time["week"] = 0
+                        #dtt[self.CLASS_KEY] = dct
+                    member_data[str(member.id)] = dtt
+                    member_data.commit()
         return
 
-    def move_monthly_to_yearly(self, activity):
+    def move_monthly_to_yearly(self):
         for member in self.bot_instance.get_all_members():
             for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
                 curr_monthly = activity.play_time["month"]
-                self.activity.play_time["year"] += curr_monthly
-                self.activity.play_time["month"] = 0
+                activity.play_time["year"] += curr_monthly
+                activity.play_time["month"] = 0
         return
 
-    def move_yearly_to_total(self, activity):
+    def move_yearly_to_total(self):
         for member in self.bot_instance.get_all_members():
             for activity in self.activityMonitorDataManager.get_data(member, self.CLASS_KEY):
                 curr_yearly = activity.play_time["year"]
-                self.activity.play_time["total"] += curr_yearly
-                self.activity.play_time["year"] = 0
+                activity.play_time["total"] += curr_yearly
+                activity.play_time["year"] = 0
         return
 
     def get_guild_stats(self, period):
@@ -146,8 +141,6 @@ class ActivityMonitor:
                             total_guild_hours += game.get_weekly_time()
                             member_time += game.get_weekly_time()
                     
-                    total_guild_hours += member_time
-
                     if (top_member == None or member_time > top_member[1]) and len(member_played_games) != 0:
                         if period == "monthly":
                             top_member = (member, member_time, max(member_played_games, key=lambda x: x.get_monthly_time()))
@@ -177,8 +170,6 @@ class ActivityMonitor:
                 most_played_game = max(played_games, key=lambda x: x.get_weekly_time())
         else:
             most_played_game = None
-
-        print(total_guild_hours, most_played_game, top_member)
 
         return (total_guild_hours, most_played_game, top_member)
                         
