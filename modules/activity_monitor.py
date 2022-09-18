@@ -53,22 +53,28 @@ class ActivityMonitor:
                         if len(member.activities) != 0:
                             main_activity = member.activities[0]
                             current_history = self.activityMonitorDataManager.get_data(member, self.CLASS_KEY) # Returns list
-                            if not any(curr.id == main_activity.application_id for curr in current_history): # If the activity is not in the list
-                                try:
+                            try: 
+                                app_id = main_activity.application_id
+                                if not any(curr.id == main_activity.application_id for curr in current_history): # If the activity is not in the list
+                                    try:
+                                        dtt = member_data[str(member.id)]
+                                        dct = dtt[self.CLASS_KEY]
+                                        dct.append(UserActivity(main_activity))
+                                        dtt[self.CLASS_KEY] = dct
+                                        member_data[str(member.id)] = dtt
+                                    except:
+                                        continue
+                                else:
                                     dtt = member_data[str(member.id)]
                                     dct = dtt[self.CLASS_KEY]
-                                    dct.append(UserActivity(main_activity))
+                                    obj = next((act for act in dct if act.id == main_activity.application_id), None)
+                                    obj.play_time["week"] += 5
                                     dtt[self.CLASS_KEY] = dct
                                     member_data[str(member.id)] = dtt
-                                except:
-                                    continue
-                            else:
-                                dtt = member_data[str(member.id)]
-                                dct = dtt[self.CLASS_KEY]
-                                obj = next((act for act in dct if act.id == main_activity.application_id), None)
-                                obj.play_time["week"] += 5
-                                dtt[self.CLASS_KEY] = dct
-                                member_data[str(member.id)] = dtt
+                            except:
+                                print("[INFO] No application id found for activity.")
+                                continue
+                            
                 
 
                 member_data.commit()
