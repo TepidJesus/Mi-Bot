@@ -311,7 +311,7 @@ async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run w
 async def display_guild_stats():
 
     curr_day = datetime.date.today()
-    if curr_day.weekday() == 0 and curr_day.day != 1:
+    if curr_day.weekday() == 0 and curr_day.day != 1 and curr_day.month != 1:
         try:
             stats = activity_handler.get_guild_stats('weekly')
             message_embed = discord.Embed(title="Weekly Activity Stats:", color=0x00aaff, description=f"----------------------------------------")
@@ -322,11 +322,13 @@ async def display_guild_stats():
 
             await miBot.guilds[0].system_channel.send(embed=message_embed)
 
-            message_embed = discord.Embed(title=f"Last Weeks Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
+            message_embed = discord.Embed(title=f"Last Weeks Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff, description=f"{stats[2][0].mention}")
             message_embed.add_field(name=f"Total Active Time:", value=f"{stats[2][1] // 60} Hours")
             message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_weekly_time() // 60} Hours", inline=True)
             if stats[2][2].picture != None:
                 message_embed.set_thumbnail(url=stats[2][2].picture)
+            elif stats[2][0].avatar == None:
+                message_embed.set_thumbnail(url=stats[2][0].avatar)
 
             activity_handler.move_weekly_to_monthly()
 
@@ -345,11 +347,13 @@ async def display_guild_stats():
 
             await miBot.guilds[0].system_channel.send(embed=message_embed)
 
-            message_embed = discord.Embed(title=f"This Months Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
+            message_embed = discord.Embed(title=f"This Months Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff, description=f"{stats[2][0].mention}")
             message_embed.add_field(name=f"Total Active Time:", value=f"{stats[2][1] // 60} Hours")
             message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_monthly_time() // 60} Hours", inline=True)
             if stats[2][2].picture != None:
                 message_embed.set_thumbnail(url=stats[2][2].picture)
+            elif stats[2][0].avatar == None:
+                message_embed.set_thumbnail(url=stats[2][0].avatar)
 
             activity_handler.move_monthly_to_yearly()
 
@@ -368,11 +372,13 @@ async def display_guild_stats():
 
             await miBot.guilds[0].system_channel.send(embed=message_embed)
 
-            message_embed = discord.Embed(title=f"This Years Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff)
+            message_embed = discord.Embed(title=f"This Years Most Active Member Was {stats[2][0].display_name}:", color=0x00aaff, description=f"{stats[2][0].mention}")
             message_embed.add_field(name=f"Total Active Time:", value=f"{stats[2][1] // 60} Hours")
             message_embed.add_field(name=f"Their Most Played Game Was: ", value=f"{stats[2][2].name} for {stats[2][2].get_yearly_time() // 60} Hours", inline=True)
             if stats[2][2].picture != None:
                 message_embed.set_thumbnail(url=stats[2][2].picture)
+            elif stats[2][0].avatar == None:
+                message_embed.set_thumbnail(url=stats[2][0].avatar)
 
             activity_handler.move_yearly_to_total()
 
