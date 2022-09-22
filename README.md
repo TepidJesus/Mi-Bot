@@ -85,8 +85,6 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `Mi-Bot`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -195,7 +193,7 @@ Distributed under the Apache 2.0 License. See `LICENSE.txt` for more information
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+Your Name - [@thomasholdom](https://twitter.com/thomasholdom) - holdomthomas@gmail.com
 
 Project Link: [https://github.com/TepidJesus/Mi-Bot](https://github.com/TepidJesus/Mi-Bot)
 
@@ -206,9 +204,8 @@ Project Link: [https://github.com/TepidJesus/Mi-Bot](https://github.com/TepidJes
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+* The Pycord Community
+* Myself
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -227,7 +224,7 @@ Project Link: [https://github.com/TepidJesus/Mi-Bot](https://github.com/TepidJes
 [license-shield]: https://img.shields.io/github/license/TepidJesus/Mi-Bot.svg?style=for-the-badge
 [license-url]: https://github.com/TepidJesus/Mi-Bot/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+[linkedin-url]: https://linkedin.com/in/thomasholdom
 [product-screenshot]: images/screenshot.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
