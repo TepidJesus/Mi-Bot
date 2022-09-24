@@ -92,13 +92,7 @@
 ### Built With
 
 * [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -120,18 +114,18 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
+1. Get a Discord Bot Token From [The Discord Developer Portal](https://discord.com/developers/)
 2. Clone the repo
    ```sh
    git clone https://github.com/TepidJesus/Mi-Bot.git
    ```
-3. Install NPM packages
+3. Install Dependencies
    ```sh
-   npm install
+   pip install -r requirements.txt
    ```
-4. Enter your API in `config.js`
+4. Enter your Token into a .env file
    ```js
-   const API_KEY = 'ENTER YOUR API';
+   DISCORD_TOKEN=YOUR_TOKEN_HERE
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
