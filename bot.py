@@ -72,6 +72,22 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
 
     await ctx.respond(embed=message_embed)
 
+@miBot.slash_command(name="activity", description="Request Activity Of A User")
+async def show_user_activity(ctx, user: discord.Option(str, "The Name Of The User You Would Like The Activity Of", required=True, default=None)):
+    await ctx.defer()
+    if user == None:
+        user_dis = ctx.author
+    else: 
+        user_dis = get_user_object(user_name=user)
+    if user_dis == None:
+        message_embed = discord.Embed(title=f"That User Doesn\'t Exist...", color=0x00aaff)
+        await ctx.respond(embed=message_embed, ephemeral=True)
+        return None
+
+    
+
+    await ctx.respond(embed=message_embed)
+
 #### SWEAR COUNT SYSTEM #####
 swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker")
 
@@ -144,7 +160,7 @@ async def add_quote(ctx, user: discord.Option(str, "The Name Of The User You Wis
     await ctx.respond(embed=message_embed)
 
 @quotes.command(name='show')
-async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The User You Wish To See Saved Quotes For", required=True, default=None)):
+async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The User You Wish To See Saved Quotes For", required=False, default=None)):
     if user == None:
         user = ctx.author
     else:
@@ -281,7 +297,7 @@ async def on_ready():
 @miBot.event
 async def on_message(message):
     if message.author == miBot.user:
-        return
+        return None
     elif message.author.bot:
         await message.add_reaction('😒')
     else:
