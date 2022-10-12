@@ -191,4 +191,30 @@ class ActivityMonitor:
             most_played_game = None
 
         return (total_guild_hours, most_played_game, top_member)
+
+    def get_member_stats(self, member):
+        """ Returns the following as a tuple:
+            - Total Hours of games played by the member so far this week (int).
+            - Top 3 played games by the member this week and hours of it (game)
+        """
+        total_member_hours = 0
+        played_games = []
+
+        with SqliteDict("./data/memberData.db") as member_data:
+            dtt = member_data[str(member.id)]
+            if not member.bot and not len(dtt[self.CLASS_KEY]) == 0:
+                lst = dtt[self.CLASS_KEY]
+                for game in lst:
+                    played_games.append(cp.copy(game))
+                    total_member_hours += game.get_weekly_time()
+        
+        if len(played_games) != 0:
+            if len(played_games) > 3:
+                most_played_games = sorted(played_games, key=lambda x: x.get_weekly_time(), reverse=True)[:3]
+            else:
+                most_played_games = sorted(played_games, key=lambda x: x.get_weekly_time(), reverse=True)[:len(played_games)]
+        else:
+            most_played_games = None
+
+        return (total_member_hours, most_played_games)
                         
