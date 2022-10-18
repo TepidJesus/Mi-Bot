@@ -88,6 +88,8 @@ async def show_user_activity(ctx, user: discord.Option(str, "The Name Of The Use
 
     message_embed = discord.Embed(title=f"Activits Statistics For __{user_dis.display_name}__", color=0x00aaff)
     message_embed.add_field(name=f"Play Time This Week:", value=f"{member_stats[0] // 60} Hours", inline=True)
+    for i in range(len(member_stats[1])):
+        message_embed.add_field(name=f"Most Played Game {i+1}:", value=f"{member_stats[1][i].name}: {member_stats[1][i] // 60} Hours", inline=False)
     
 
     await ctx.respond(embed=message_embed)
