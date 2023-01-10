@@ -216,15 +216,18 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
 @music.command(name='resume', description='Resume A Paused Track')
 async def resume_track(ctx):
     if ctx.voice_client.is_paused():
+        message_embed = discord.Embed(description=f"Track Resumed", color=0x49d706)
+        await ctx.respond(embed=message_embed, ephemeral=True)
         ctx.voice_client.resume()
     else:
         message_embed = discord.Embed(description="No Track Is Currently Paused", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
 
-@music.command(name='skip', description='Skip the currently playing track')
+@music.command(name='skip', description='Skip the currently playing track', aliases=['next'])
 async def skip_track(ctx):
     if ctx.voice_client.is_playing():
         ctx.voice_client.stop()
+        await ctx.res
     else:
         message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
