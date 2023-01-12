@@ -15,6 +15,7 @@ from modules.activity_monitor import ActivityMonitor
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+PRESENCE_OPTIONS = ["with your mum.", "with myself.", "with a panini press.", "with a toaster in the bath.", "with chat GPT", "with some E-Girls", "fire"]
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -110,7 +111,7 @@ async def showscores(ctx):
         usr_obj = miBot.guilds[0].get_member(int(top_scores[i][0]))
         names.append(usr_obj.display_name)
 
-    message_embed = discord.Embed(title="Top Three Swear Counts In The Server", color=0x00aaff)
+    message_embed = discord.Embed(title="Highest Swear Counts In The Server", color=0x00aaff)
     message_embed.set_author(name=miBot.user.name)
     message_embed.add_field(name=f"🟨 - {names[0]}", value=f'{top_scores[0][1]} Points', inline=True)
     message_embed.add_field(name=f"⬜ - {names[1]}", value=f'{top_scores[1][1]} Points', inline=False)
@@ -295,6 +296,8 @@ async def on_connect():
 async def on_ready():
         print(f'[INFO] Mi Bot Is Ready')
 
+        try:
+            await miBot.change_presence(activity=discord.Game(name="with your mom"))
         score_handler.refresh_scores(guild_members=miBot.get_all_members())
         print(f'[INFO] Swear Counts Loaded')
 
