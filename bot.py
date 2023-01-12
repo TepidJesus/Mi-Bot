@@ -75,10 +75,12 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
 @miBot.slash_command(name="activity", description="Request Activity Of A User")
 async def show_user_activity(ctx, user: discord.Option(str, "The Name Of The User You Would Like The Activity Of", required=True, default=None)):
     await ctx.defer()
+
     if user == None:
         user_dis = ctx.author
     else: 
         user_dis = get_user_object(user_name=user)
+
     if user_dis == None:
         message_embed = discord.Embed(title=f"That User Doesn\'t Exist...", color=0x00aaff)
         await ctx.respond(embed=message_embed, ephemeral=True)
@@ -86,7 +88,7 @@ async def show_user_activity(ctx, user: discord.Option(str, "The Name Of The Use
 
     member_stats = activity_handler.get_member_stats(user_dis)
 
-    message_embed = discord.Embed(title=f"Activits Statistics For __{user_dis.display_name}__", color=0x00aaff)
+    message_embed = discord.Embed(title=f"Activity Statistics For __{user_dis.display_name}__", color=0x00aaff)
     message_embed.add_field(name=f"Play Time This Week:", value=f"{member_stats[0] // 60} Hours", inline=True)
     for i in range(len(member_stats[1])):
         message_embed.add_field(name=f"Most Played Game {i+1}:", value=f"{member_stats[1][i].name}: {member_stats[1][i] // 60} Hours", inline=False)
