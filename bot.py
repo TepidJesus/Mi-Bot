@@ -72,6 +72,30 @@ async def show_user_info(ctx, user: discord.Option(str, "The Name Of The User Yo
 
     await ctx.respond(embed=message_embed)
 
+@miBot.slash_command(name="activity", description="Request Activity Of A User")
+async def show_user_activity(ctx, user: discord.Option(str, "The Name Of The User You Would Like The Activity Of", required=True, default=None)):
+    await ctx.defer()
+
+    if user == None:
+        user_dis = ctx.author
+    else: 
+        user_dis = get_user_object(user_name=user)
+
+    if user_dis == None:
+        message_embed = discord.Embed(title=f"That User Doesn\'t Exist...", color=0x00aaff)
+        await ctx.respond(embed=message_embed, ephemeral=True)
+        return None
+
+    member_stats = activity_handler.get_member_stats(user_dis)
+
+    message_embed = discord.Embed(title=f"Activity Statistics For __{user_dis.display_name}__", color=0x00aaff)
+    message_embed.add_field(name=f"Play Time This Week:", value=f"{member_stats[0] // 60} Hours", inline=True)
+    for i in range(len(member_stats[1])):
+        message_embed.add_field(name=f"Most Played Game {i+1}:", value=f"{member_stats[1][i].name}: {member_stats[1][i] // 60} Hours", inline=False)
+    
+
+    await ctx.respond(embed=message_embed)
+
 #### SWEAR COUNT SYSTEM #####
 swearcount = miBot.create_group(name="swearcount", description="Base Command For The Swear Score Tracker")
 
@@ -144,7 +168,7 @@ async def add_quote(ctx, user: discord.Option(str, "The Name Of The User You Wis
     await ctx.respond(embed=message_embed)
 
 @quotes.command(name='show')
-async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The User You Wish To See Saved Quotes For", required=True, default=None)):
+async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The User You Wish To See Saved Quotes For", required=False, default=None)):
     if user == None:
         user = ctx.author
     else:
@@ -194,15 +218,18 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
 @music.command(name='resume', description='Resume A Paused Track')
 async def resume_track(ctx):
     if ctx.voice_client.is_paused():
+        message_embed = discord.Embed(description=f"Track Resumed", color=0x49d706)
+        await ctx.respond(embed=message_embed, ephemeral=True)
         ctx.voice_client.resume()
     else:
         message_embed = discord.Embed(description="No Track Is Currently Paused", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
 
-@music.command(name='skip', description='Skip the currently playing track')
+@music.command(name='skip', description='Skip the currently playing track', aliases=['next'])
 async def skip_track(ctx):
     if ctx.voice_client.is_playing():
         ctx.voice_client.stop()
+        await ctx.res
     else:
         message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
@@ -281,7 +308,7 @@ async def on_ready():
 @miBot.event
 async def on_message(message):
     if message.author == miBot.user:
-        return
+        return None
     elif message.author.bot:
         await message.add_reaction('😒')
     else:
