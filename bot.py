@@ -288,15 +288,28 @@ async def on_connect():
     global score_handler
     global quote_handler
     global activity_handler
-    score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
-    quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
-    activity_handler = ActivityMonitor(data_manager, miBot)
+
+    try:
+        score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
+    except:
+        print(f'[Critical Error] Mi Bot Failed To Load The Score Handler. Aborting Startup')
+        raise SystemExit(0)
+    
+    try:
+        quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
+    except:
+        print(f'[Critical Error] Mi Bot Failed To Load The Quote Handler. Aborting Startup')
+        raise SystemExit(0)
+
+    try:
+        activity_handler = ActivityMonitor(data_manager, miBot)
+    except:
+        print(f'[Critical Error] Mi Bot Failed To Load The Activity Handler. Aborting Startup')
+        raise SystemExit(0)
 
 
 @miBot.event
 async def on_ready():
-        print(f'[INFO] Mi Bot Is Ready')
-
         score_handler.refresh_scores(guild_members=miBot.get_all_members())
         print(f'[INFO] Swear Counts Loaded')
 
@@ -309,6 +322,8 @@ async def on_ready():
         # Starting Loops
         display_guild_stats.start()
         rotate_presence.start()
+
+        print(f'[INFO] Mi Bot Is Ready')
 
 @miBot.event
 async def on_message(message):
@@ -422,8 +437,6 @@ async def display_guild_stats():
         except:
             print(f'[ERROR] Failed To Display Stats')
 
-
-        
 
 #### MAIN LOOP RUN ####
 miBot.loop.create_task(idle_check())
