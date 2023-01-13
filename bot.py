@@ -297,8 +297,6 @@ async def on_connect():
 async def on_ready():
         print(f'[INFO] Mi Bot Is Ready')
 
-        
-
         score_handler.refresh_scores(guild_members=miBot.get_all_members())
         print(f'[INFO] Swear Counts Loaded')
 
@@ -308,7 +306,7 @@ async def on_ready():
         miBot.loop.create_task(activity_handler.full_activity_check())
         print(f'[INFO] Initial Activity Check Complete')
 
-        #Starting Loops
+        # Starting Loops
         display_guild_stats.start()
         rotate_presence.start()
 
