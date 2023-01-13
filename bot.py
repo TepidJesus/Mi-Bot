@@ -4,6 +4,7 @@ import os
 import asyncio
 from discord.ext import commands, tasks
 import datetime
+import random
 
 from modules.music_tracker import YTDLSource
 from modules.music_tracker import MusicHandler
@@ -15,7 +16,7 @@ from modules.activity_monitor import ActivityMonitor
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-PRESENCE_OPTIONS = ["with your mum.", "with myself.", "with a panini press.", "with a toaster in the bath.", "with chat GPT", "with some E-Girls", "fire"]
+PRESENCE_OPTIONS = ["with your mum.", "with myself.", "with a panini press.", "with a toaster in the bath.", "with chat GPT", "with some E-Girls.", "with fire"]
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -296,8 +297,8 @@ async def on_connect():
 async def on_ready():
         print(f'[INFO] Mi Bot Is Ready')
 
-        try:
-            await miBot.change_presence(activity=discord.Game(name="with your mom"))
+        
+
         score_handler.refresh_scores(guild_members=miBot.get_all_members())
         print(f'[INFO] Swear Counts Loaded')
 
@@ -306,7 +307,10 @@ async def on_ready():
 
         miBot.loop.create_task(activity_handler.full_activity_check())
         print(f'[INFO] Initial Activity Check Complete')
+
+        #Starting Loops
         display_guild_stats.start()
+        rotate_presence.start()
 
 @miBot.event
 async def on_message(message):
@@ -336,6 +340,10 @@ async def on_member_join(member): #TODO: Ensure all refresh_XX methods are run w
             message_embed.set_thumbnail(url=member.avatar)
         
         await member.guild.system_channel.send(embed=message_embed)
+
+@tasks.loop(hours=3)
+async def rotate_presence():
+    await miBot.change_presence(activity=discord.Game(name=random.choice(PRESENCE_OPTIONS)))
 
 @tasks.loop(hours=24)
 async def display_guild_stats():
