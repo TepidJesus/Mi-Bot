@@ -5,6 +5,7 @@ import asyncio
 from discord.ext import commands, tasks
 import datetime
 import random
+import sys
 
 from modules.music_tracker import YTDLSource
 from modules.music_tracker import MusicHandler
@@ -249,7 +250,7 @@ async def playing(ctx):
     if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
         await ctx.respond(embed=music_handler.get_now_playing_embed(music_handler.play_queue[-1][1].data['title'], music_handler.play_queue[-1][1].data['thumbnail'], ctx.author.name ), ephemeral=True)
     else:
-        message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
+        message_embed = discord.Embed(description="No Track Is Currently Playing.", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
 
 @music.command(name='disconnect', description='Force The Bot To Disconnet')
@@ -440,5 +441,12 @@ async def display_guild_stats():
 
 #### MAIN LOOP RUN ####
 miBot.loop.create_task(idle_check())
-miBot.run(TOKEN)
 
+try:
+    miBot.run(TOKEN)
+except TypeError:
+    print(f'[CRITICAL ERROR] No Token Found. Please Check Your .env File.\nYour .env File Should Contain A Line That Looks Like This: \nDISCORD_TOKEN=YOUR_TOKEN_HERE')
+    raise SystemExit(0)
+except discord.errors.LoginFailure:
+    print(f'[CRITICAL ERROR] Invalid Token Found. Please check you have correctly entered your token into the .env file.')
+    raise SystemExit(0)
