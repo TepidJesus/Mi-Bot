@@ -54,6 +54,13 @@ Simply follow the instructions below to set up your own instance of Mi Bot!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Features
+  
+  1. YouTube music player
+  2. Swear counter
+  3. Game activity tracker
+  4. Display Discord user information
+  5. Add and display quoted messages from Discord users
 
 <!-- ROADMAP -->
 ## Roadmap
