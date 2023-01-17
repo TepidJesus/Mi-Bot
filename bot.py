@@ -5,7 +5,6 @@ import asyncio
 from discord.ext import commands, tasks
 import datetime
 import random
-import sys
 
 from modules.music_tracker import YTDLSource
 from modules.music_tracker import MusicHandler
@@ -17,7 +16,9 @@ from modules.activity_monitor import ActivityMonitor
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+
 PRESENCE_OPTIONS = ["with your mum.", "with myself.", "with a panini press.", "with a toaster in the bath.", "with chat GPT", "with some E-Girls.", "with fire"]
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
