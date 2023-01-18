@@ -16,7 +16,9 @@ from modules.activity_monitor import ActivityMonitor
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-PRESENCE_OPTIONS = ["with your mum.", "with myself.", "with a panini press.", "with a toaster in the bath.", "with chat GPT", "with some E-Girls.", "with fire"]
+
+PRESENCE_OPTIONS = ["with your mum.", "with myself.", "with a panini press.", "with a toaster in the bath.", "with chat GPT", "with some E-Girls.", "with fire."]
+
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -175,7 +177,14 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
         user = ctx.author
     else:
         user = get_user_object(user)
-    member_quotes = quote_handler.retrieve_quotes(user)
+
+    try:
+        member_quotes = quote_handler.retrieve_quotes(user)
+    except:
+        message_embed = discord.Embed(title="Sorry, Something Went Wrong. Please Try Again Later", color=0x00aaff)
+        await ctx.respond(embed = message_embed, ephemeral=True)
+        return None
+
     if len(member_quotes) == 0:
         message_embed = discord.Embed(title=f"{user.display_name} Has No Quoted Messages", color=0x00aaff)
     else:
@@ -195,16 +204,17 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
         try:
             player = await YTDLSource.from_url(track, loop=miBot.loop, stream=True)
         except:
-            message_embed = discord.Embed(description="Sorry, Something Went Wrong. Please Try Again Later.", color=0x49d706)
+            message_embed = discord.Embed(description="Sorry, I Was Unable To Play That Track. Please Try Again Later.", color=0x49d706)
             await ctx.respond(embed=message_embed, ephemeral=True)
             return None
     else:
         try:
             player = await YTDLSource.from_search(track, loop=miBot.loop, stream=True)
         except:
-            message_embed = discord.Embed(description="Sorry, Something Went Wrong. Please Try Again Later.", color=0x49d706)
+            message_embed = discord.Embed(description="Sorry, I Couldn't Find That Track. Please Try Again Later.", color=0x49d706)
             await ctx.respond(embed=message_embed, ephemeral=True)
             return None
+
     if len(music_handler.play_queue) >= 10:
         message_embed = discord.Embed(description="The Queue is Already Full. Please Try Again Soon.", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
@@ -249,7 +259,7 @@ async def playing(ctx):
     if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
         await ctx.respond(embed=music_handler.get_now_playing_embed(music_handler.play_queue[-1][1].data['title'], music_handler.play_queue[-1][1].data['thumbnail'], ctx.author.name ), ephemeral=True)
     else:
-        message_embed = discord.Embed(description="No Track Is Currently Playing", color=0x49d706)
+        message_embed = discord.Embed(description="No Track Is Currently Playing.", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
 
 @music.command(name='disconnect', description='Force The Bot To Disconnet')
@@ -288,15 +298,28 @@ async def on_connect():
     global score_handler
     global quote_handler
     global activity_handler
-    score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
-    quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
-    activity_handler = ActivityMonitor(data_manager, miBot)
+
+    try:
+        score_handler = ScoreKeeper(miBot.guilds[0].members, data_manager)
+    except:
+        print(f'[Critical Error] Mi Bot Failed To Load The Score Handler. Aborting Startup...')
+        raise SystemExit(0)
+    
+    try:
+        quote_handler = QuoteKeeper(miBot.guilds[0].members, data_manager)
+    except:
+        print(f'[Critical Error] Mi Bot Failed To Load The Quote Handler. Aborting Startup...')
+        raise SystemExit(0)
+
+    try:
+        activity_handler = ActivityMonitor(data_manager, miBot)
+    except:
+        print(f'[Critical Error] Mi Bot Failed To Load The Activity Handler. Aborting Startup...')
+        raise SystemExit(0)
 
 
 @miBot.event
 async def on_ready():
-        print(f'[INFO] Mi Bot Is Ready')
-
         score_handler.refresh_scores(guild_members=miBot.get_all_members())
         print(f'[INFO] Swear Counts Loaded')
 
@@ -310,6 +333,8 @@ async def on_ready():
         display_guild_stats.start()
         rotate_presence.start()
 
+        print(f'[INFO] Mi Bot Is Ready')
+
 @miBot.event
 async def on_message(message):
     if message.author == miBot.user:
@@ -317,8 +342,18 @@ async def on_message(message):
     elif message.author.bot:
         await message.add_reaction('😒')
     else:
-        message_as_list = message_handler.listify_message(message_raw=message)
-        num_swear_words = message_handler.swear_check(message_as_list)
+        try:
+            message_as_list = message_handler.listify_message(message_raw=message)
+        except:
+            print(f'[ERROR] Failed To Listify Message')
+            return None
+
+        try:
+            num_swear_words = message_handler.swear_check(message_as_list)
+        except:
+            print(f'[ERROR] Failed To Check Message For Swear Words')
+            return None
+
         if  num_swear_words != 0:
             score_handler.alter_score(member=message.author, num=num_swear_words)
 
@@ -423,9 +458,14 @@ async def display_guild_stats():
             print(f'[ERROR] Failed To Display Stats')
 
 
-        
-
 #### MAIN LOOP RUN ####
 miBot.loop.create_task(idle_check())
-miBot.run(TOKEN)
 
+try:
+    miBot.run(TOKEN)
+except TypeError:
+    print(f'[CRITICAL ERROR] No Token Found. Please Check Your .env File.\nYour .env File Should Contain A Line That Looks Like This: \nDISCORD_TOKEN=YOUR_TOKEN_HERE')
+    raise SystemExit(0)
+except discord.errors.LoginFailure:
+    print(f'[CRITICAL ERROR] Invalid Token Found. Please check you have correctly entered your token into the .env file.')
+    raise SystemExit(0)
