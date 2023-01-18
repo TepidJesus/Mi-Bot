@@ -177,7 +177,14 @@ async def show_member_quotes(ctx, user: discord.Option(str, "The Name Of The Use
         user = ctx.author
     else:
         user = get_user_object(user)
-    member_quotes = quote_handler.retrieve_quotes(user)
+
+    try:
+        member_quotes = quote_handler.retrieve_quotes(user)
+    except:
+        message_embed = discord.Embed(title="Sorry, Something Went Wrong. Please Try Again Later", color=0x00aaff)
+        await ctx.respond(embed = message_embed, ephemeral=True)
+        return None
+
     if len(member_quotes) == 0:
         message_embed = discord.Embed(title=f"{user.display_name} Has No Quoted Messages", color=0x00aaff)
     else:
@@ -207,7 +214,7 @@ async def play_track(ctx, track: discord.Option(str, "The Name Of The Track You 
             message_embed = discord.Embed(description="Sorry, I Couldn't Find That Track. Please Try Again Later.", color=0x49d706)
             await ctx.respond(embed=message_embed, ephemeral=True)
             return None
-            
+
     if len(music_handler.play_queue) >= 10:
         message_embed = discord.Embed(description="The Queue is Already Full. Please Try Again Soon.", color=0x49d706)
         await ctx.respond(embed=message_embed, ephemeral=True)
