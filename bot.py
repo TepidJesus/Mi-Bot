@@ -294,6 +294,10 @@ async def check_queue(ctx):
 #### ADMIN COMMANDS ####
 admin = miBot.create_group(name="admin", description="Admin Commands", default_permission=False)
 
+@admin.command(name='panel', description='Open The Admin Panel')
+async def admin_panel(ctx):
+    
+    await ctx.respond(embed=admin_panel_embed, components=admin_panel_components)
 
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
