@@ -5,5 +5,5 @@ quote_bank.json
 __pycache__/
 *.pyc
 activity_valut.json
-./data/member_data.db
 .db
+data/memberData.db
