@@ -290,6 +290,11 @@ async def check_queue(ctx):
     else:
         await ctx.respond(embed=music_handler.get_now_playing_embed(music_handler.play_queue[-2][1].data['title'], music_handler.play_queue[-2][1].data['thumbnail'], ctx.author.name))
 
+
+#### ADMIN COMMANDS ####
+admin = miBot.create_group(name="admin", description="Admin Commands", default_permission=False)
+
+
 ######## LISTENERS ########
 #### BOT LISTENING EVENTS ####
 @miBot.event
