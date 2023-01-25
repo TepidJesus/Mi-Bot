@@ -294,9 +294,18 @@ async def check_queue(ctx):
 #### ADMIN COMMANDS ####
 admin = miBot.create_group(name="admin", description="Admin Commands", default_permission=False)
 
+class CloseButton(discord.ui.view):
+    @discord.ui.Button(label="Close", style=discord.ButtonStyle.primary, emoji="❌")
+    async def close(self, button: discord.ui.Button, interaction: discord.Interaction):
+
 @admin.command(name='panel', description='Open The Admin Panel')
 async def admin_panel(ctx):
-    
+    admin_panel_embed = discord.Embed(title="Admin Panel", description="Please Select An Option", color=0x00aaff)
+    admin_panel_components = [
+            Button(style=ButtonStyle.green, label="Scoreboard", custom_id="scoreboard"),
+            Button(style=ButtonStyle.green, label="Quotes", custom_id="quotes"),
+            Button(style=ButtonStyle.green, label="Activity", custom_id="activity")
+        ]
     await ctx.respond(embed=admin_panel_embed, components=admin_panel_components)
 
 ######## LISTENERS ########
