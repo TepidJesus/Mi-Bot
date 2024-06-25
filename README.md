@@ -28,7 +28,7 @@
 </div>
 
 <!-- GETTING STARTED -->
-## Getting Started
+## Getting Started:
 
 Simply follow the instructions below to set up your own instance of Mi Bot!
 
