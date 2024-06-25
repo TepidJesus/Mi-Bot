@@ -14,7 +14,7 @@
 <h3 align="center">Mi Bot</h3>
 
   <p align="center">
-    Say hello to Mi Bot, a multi-purpose Discord bot with lots of exciting features.
+    Say hello to Mi Bot, a multi-purpose Discord bot with lots of exciting features
     <br />
     <a href="https://github.com/TepidJesus/Mi-Bot/"><strong>Explore the docs »</strong></a>
     <br />
