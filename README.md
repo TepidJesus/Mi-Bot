@@ -47,7 +47,7 @@ Simply follow the instructions below to set up your own instance of Mi Bot!
    ```py
    DISCORD_TOKEN=YOUR_TOKEN_HERE
    ```
-5. Run bot.py.
+5. Run bot.py
     ```sh
     python3 bot.py
     ```
