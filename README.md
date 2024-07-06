@@ -68,6 +68,7 @@ Simply follow the instructions below to set up your own instance of Mi Bot!
 - [ ] Admin Control Panel
 - [ ] Sharding
 - [ ] No Hosting Required (Simply Invite The Bot To Your Server)
+- [ ] Security Improvements and Permission Scoping
 
 See the [open issues](https://github.com/TepidJesus/Mi-Bot/issues) for a full list of proposed features (and known issues).
 
@@ -118,6 +119,7 @@ Project Link: [https://github.com/TepidJesus/Mi-Bot](https://github.com/TepidJes
 
 * The Pycord Community
 * Myself
+* The University of Auckland Computer Science Department
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
