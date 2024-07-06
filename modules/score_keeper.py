@@ -53,3 +53,8 @@ class ScoreKeeper:
         self.scoreKeeperDataManager.ensure_category_single(self.CLASS_KEY, 0, member)
         print(f"[INFO] A New Member, {member.name}, Has Been Added To The Score Database")
 
+    def remove_member(self, member):
+        self.scoreKeeperDataManager.remove_member(member)
+        print(f"[INFO] A New Member, {member.name}, Has Been Removed From The Score Database")
+        
+
